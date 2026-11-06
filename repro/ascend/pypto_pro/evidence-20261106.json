@@ -1,0 +1,449 @@
+{
+  "date": "2026-11-06",
+  "decision": "GO for an experimental backend; full GQA support is not certified",
+  "environment": {
+    "hardware": "Ascend950PR_9579",
+    "cann": "9.2.0",
+    "pypto": "0.3.0",
+    "torch": "2.13.0+cpu",
+    "torch_npu": "2.13.0.rc1",
+    "target": "3510",
+    "tested_cube_blocks": 4,
+    "platform_cube_cores": 28,
+    "platform_vector_cores": 56
+  },
+  "validation": {
+    "distinct_checks": 17,
+    "poisoned_output_repetitions_per_check": 3,
+    "total_poisoned_output_checks": 51,
+    "full_gqa_gate": false,
+    "flash_attention": [
+      {
+        "sq": 64,
+        "sk": 64,
+        "dim": 128,
+        "blocks": 1,
+        "first_three_calls_including_compile_s": 4.0914332929532975,
+        "max_abs_samples": [
+          0.0001220703125,
+          0.0001220703125,
+          0.0001220703125
+        ],
+        "all_output_finite": true,
+        "deterministic_output": true,
+        "compiled_instances": 1,
+        "host_callable_us": [
+          557.064875,
+          537.121375,
+          525.10425
+        ],
+        "event_stream_us": [
+          537.9704833030701,
+          543.4551239013672,
+          531.4261317253113
+        ],
+        "host_median_us": 537.121375,
+        "event_median_us": 537.9704833030701,
+        "scope": "FP16 non-causal 2D attention mechanism validation, NOT GQA gate"
+      },
+      {
+        "sq": 34,
+        "sk": 62,
+        "dim": 128,
+        "blocks": 1,
+        "first_three_calls_including_compile_s": 0.003069972852244973,
+        "max_abs_samples": [
+          0.000244140625,
+          0.000244140625,
+          0.000244140625
+        ],
+        "all_output_finite": true,
+        "deterministic_output": true,
+        "compiled_instances": 1,
+        "host_callable_us": [
+          541.64325,
+          508.383375,
+          495.3455
+        ],
+        "event_stream_us": [
+          547.0016002655029,
+          514.4802331924438,
+          500.9467601776123
+        ],
+        "host_median_us": 508.383375,
+        "event_median_us": 514.4802331924438,
+        "scope": "FP16 non-causal 2D attention mechanism validation, NOT GQA gate"
+      },
+      {
+        "sq": 162,
+        "sk": 190,
+        "dim": 128,
+        "blocks": 1,
+        "first_three_calls_including_compile_s": 0.0036299938801676035,
+        "max_abs_samples": [
+          0.0001220703125,
+          0.0001220703125,
+          0.0001220703125
+        ],
+        "all_output_finite": true,
+        "deterministic_output": true,
+        "compiled_instances": 1,
+        "host_callable_us": [
+          533.306875,
+          507.014,
+          488.650125
+        ],
+        "event_stream_us": [
+          540.4921174049377,
+          510.4111433029175,
+          494.3597614765167
+        ],
+        "host_median_us": 507.014,
+        "event_median_us": 510.4111433029175,
+        "scope": "FP16 non-causal 2D attention mechanism validation, NOT GQA gate"
+      },
+      {
+        "sq": 512,
+        "sk": 512,
+        "dim": 128,
+        "blocks": 4,
+        "first_three_calls_including_compile_s": 0.0043408689089119434,
+        "max_abs_samples": [
+          6.103515625e-05,
+          6.103515625e-05,
+          6.103515625e-05
+        ],
+        "all_output_finite": true,
+        "deterministic_output": true,
+        "compiled_instances": 1,
+        "host_callable_us": [
+          564.339875,
+          505.41,
+          504.930125
+        ],
+        "event_stream_us": [
+          570.6025958061218,
+          512.0057463645935,
+          510.80214977264404
+        ],
+        "host_median_us": 505.41,
+        "event_median_us": 512.0057463645935,
+        "scope": "FP16 non-causal 2D attention mechanism validation, NOT GQA gate"
+      },
+      {
+        "sq": 1,
+        "sk": 2048,
+        "dim": 128,
+        "blocks": 1,
+        "first_three_calls_including_compile_s": 0.002949533984065056,
+        "max_abs_samples": [
+          3.0517578125e-05,
+          3.0517578125e-05,
+          3.0517578125e-05
+        ],
+        "all_output_finite": true,
+        "deterministic_output": true,
+        "compiled_instances": 1,
+        "host_callable_us": [
+          553.79,
+          526.41875,
+          510.156125
+        ],
+        "event_stream_us": [
+          561.2203478813171,
+          532.2662591934204,
+          517.5901055335999
+        ],
+        "host_median_us": 526.41875,
+        "event_median_us": 532.2662591934204,
+        "scope": "FP16 non-causal 2D attention mechanism validation, NOT GQA gate"
+      }
+    ],
+    "capability_primitives": [
+      {
+        "name": "native_BSND_B1_S16_G4",
+        "passed": true,
+        "max_abs_samples": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite": true,
+        "wall_s": 3.4404905019328,
+        "atol": 0,
+        "rtol": 0
+      },
+      {
+        "name": "native_BSND_B2_S17_G4",
+        "passed": true,
+        "max_abs_samples": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite": true,
+        "wall_s": 0.0037826320622116327,
+        "atol": 0,
+        "rtol": 0
+      },
+      {
+        "name": "native_BSND_B2_S33_G3",
+        "passed": true,
+        "max_abs_samples": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite": true,
+        "wall_s": 0.004440553020685911,
+        "atol": 0,
+        "rtol": 0
+      },
+      {
+        "name": "native_BSND_B1_S1_G1",
+        "passed": true,
+        "max_abs_samples": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite": true,
+        "wall_s": 0.002970813075080514,
+        "atol": 0,
+        "rtol": 0
+      },
+      {
+        "name": "right_down_causal_Sq1_Sk64",
+        "passed": true,
+        "max_abs_samples": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite": true,
+        "wall_s": 3.3170582531020045,
+        "atol": 0,
+        "rtol": 0
+      },
+      {
+        "name": "right_down_causal_Sq17_Sk64",
+        "passed": true,
+        "max_abs_samples": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite": true,
+        "wall_s": 0.0029936160426586866,
+        "atol": 0,
+        "rtol": 0
+      },
+      {
+        "name": "right_down_causal_Sq64_Sk64",
+        "passed": true,
+        "max_abs_samples": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite": true,
+        "wall_s": 0.0030464371666312218,
+        "atol": 0,
+        "rtol": 0
+      },
+      {
+        "name": "BF16_Cube_17x256x33",
+        "passed": true,
+        "max_abs_samples": [
+          7.62939453125e-06,
+          7.62939453125e-06,
+          7.62939453125e-06
+        ],
+        "finite": true,
+        "wall_s": 3.3776652708183974,
+        "atol": 0.001,
+        "rtol": 0.001
+      },
+      {
+        "name": "BF16_Cube_64x256x64",
+        "passed": true,
+        "max_abs_samples": [
+          7.62939453125e-06,
+          7.62939453125e-06,
+          7.62939453125e-06
+        ],
+        "finite": true,
+        "wall_s": 0.0033482208382338285,
+        "atol": 0.001,
+        "rtol": 0.001
+      },
+      {
+        "name": "BF16_Cube_96x256x80",
+        "passed": true,
+        "max_abs_samples": [
+          1.1444091796875e-05,
+          1.1444091796875e-05,
+          1.1444091796875e-05
+        ],
+        "finite": true,
+        "wall_s": 0.0035579039249569178,
+        "atol": 0.001,
+        "rtol": 0.001
+      }
+    ],
+    "pipeline_serial": {
+      "source": "auto_pipeline_serial.py",
+      "passed": true,
+      "max_abs_samples": [
+        4.57763671875e-05,
+        4.57763671875e-05,
+        4.57763671875e-05
+      ],
+      "wall_s": 3.8487365779001266,
+      "finite": true,
+      "scope": "four-stage relu(A@B)@D pipeline, not GQA gate",
+      "pipeline_generated": [
+        "build/pipeline_demo_kernel__3510__d1/tk_none/pipeline_generated.py"
+      ]
+    },
+    "pipeline_preload2": {
+      "source": "official_auto_pipeline.py",
+      "passed": true,
+      "max_abs_samples": [
+        4.57763671875e-05,
+        4.57763671875e-05,
+        4.57763671875e-05
+      ],
+      "wall_s": 3.6928861369378865,
+      "finite": true,
+      "scope": "four-stage relu(A@B)@D pipeline, not GQA gate",
+      "pipeline_generated": [
+        "build/pipeline_demo_kernel__3510__d1/tk_none/pipeline_generated.py"
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "probe": "published-fa",
+      "logical_calls": 5,
+      "recorded_tasks": 5,
+      "names": [
+        "PYPTO_fa_perf_tkv_preload_dn_kernel"
+      ],
+      "block_nums": [
+        "1"
+      ],
+      "task_duration_us": [
+        10.569,
+        10.447,
+        10.526,
+        10.461,
+        10.52
+      ],
+      "median_task_us": 10.52
+    },
+    {
+      "probe": "published-pipeline0",
+      "logical_calls": 5,
+      "recorded_tasks": 5,
+      "names": [
+        "PYPTO_pipeline_demo_kernel"
+      ],
+      "block_nums": [
+        "1"
+      ],
+      "task_duration_us": [
+        9.027,
+        9.038,
+        9.038,
+        9.071,
+        9.034
+      ],
+      "median_task_us": 9.038
+    },
+    {
+      "probe": "published-pipeline2",
+      "logical_calls": 5,
+      "recorded_tasks": 5,
+      "names": [
+        "PYPTO_pipeline_demo_kernel"
+      ],
+      "block_nums": [
+        "1"
+      ],
+      "task_duration_us": [
+        6.594,
+        6.584,
+        6.557,
+        6.564,
+        6.556
+      ],
+      "median_task_us": 6.564
+    }
+  ],
+  "host_attribution": {
+    "original": {
+      "samples_us": [
+        549.8145,
+        504.0983125,
+        501.141,
+        494.068875,
+        499.9851875
+      ],
+      "median_us": 501.141
+    },
+    "compiled_instances": 1,
+    "scope": "host diagnostic; private API introspection is not a backend contract",
+    "cache_static_command_only": {
+      "samples_us": [
+        73.1110625,
+        69.42225,
+        69.37625,
+        69.98225,
+        68.284
+      ],
+      "median_us": 69.42225
+    },
+    "restored": {
+      "samples_us": [
+        514.3215,
+        476.5581875,
+        469.16075,
+        482.69,
+        485.678125
+      ],
+      "median_us": 482.69
+    }
+  },
+  "sources": {
+    "sources": [
+      {
+        "file": "official_flash_attention.py",
+        "sha256": "f1002fd5fa48bda353895f9986dee363d659cf5e0334f1cddf68b06eae7cbdf7"
+      },
+      {
+        "file": "official_auto_pipeline.py",
+        "sha256": "3d0436bfa5fbc40521e3ff6d524f6ab2f83264a6b86f6d38b8e4ae7d723a0f10"
+      },
+      {
+        "file": "auto_pipeline_serial.py",
+        "sha256": "ee4f2bb29030eeb4111266326a05fd4f85dc75e6fb3a02781c25dee863c1cbea"
+      }
+    ],
+    "flash_attention_url": "https://pypto.gitcode.com/_downloads/31e4d98a385f5cf80b8d3457c63e9760/test_fa_perf_tkv_preload_dn_vf_tail_tilegroup.py",
+    "pipeline_url": "https://pypto.gitcode.com/guide/programming_guide/pro/advanced_programming/auto_parallel_pipeline.html",
+    "serial_variant": "only preload=2 -> preload=0 in kernel decorator"
+  },
+  "installed_module_fingerprints": {
+    "jit.py": "d4a820961870643f967d3a08d95d1891047eaad4b4e4d027911a3dce9a0f4da8",
+    "exception_dump.py": "422ac50dfab27d976b030a6b425cf0e7598d34a8ecacc839b5b5c2277554cdb9",
+    "shape_policy.py": "f7f3c8017fccadee11f019132f0a9a5a796ccf4cca3814e1fcae3463ba38ca88"
+  },
+  "limitations": [
+    "only Ascend950PR tested; 950DT documented but not tested",
+    "FP16 attention plus BF16 matmul and separate causal/head-addressing probes; no integrated 20-case GQA",
+    "profile task times are diagnostic, hot-cache, five launches, not a confirmed speed claim",
+    "static debug-command cache is a process-local A/B only, not production behavior",
+    "JIT cache is process-local; AOT and sanitizer are documented but not tested here"
+  ]
+}
