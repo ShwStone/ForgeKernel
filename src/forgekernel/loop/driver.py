@@ -6270,7 +6270,7 @@ def run_meta_step(ctx: LoopContext, *, best_before: float | None = None,
                 f"primary evidence, read before judging)\n"
                 f"{render_ncu_report(records, baseline=arch_ncu)}"
                 f"\n\n### Metric evolution table\n{render_ncu_trace(records)}\n")
-    if lang_mode.is_pypto(ctx.language):
+    if lang_mode.is_ascend(ctx.language):
         from forgekernel.profiling import evidence_digest, benchmark_digest
         ncu_view = "\n\n## Ascend hardware ground truth (not NCU)\n" + json.dumps({
             "iterations": [{"iter": r.iter, "verdict": r.verdict,
@@ -8821,7 +8821,7 @@ def run_recon_step(ctx: LoopContext) -> ReconResult:
         _log(f"meta/recon: completed in a previous session ({_RECON_STATE_NAME} "
              "validates against the on-disk write-up) — skipping straight to distillation")
         return prior
-    if lang_mode.is_pypto(ctx.language):
+    if lang_mode.is_ascend(ctx.language):
         return _run_ascend_recon(ctx)
     _seed_sass_tools(ctx, rbe)
     # Freshness floor for the write-up gate: artifacts must have been (re)written
@@ -10650,7 +10650,7 @@ def _seed_ws_stall_tools(ctx: LoopContext) -> None:
     `git archive`, which ships committed files only. Same driver-not-agent rule
     as the recon seeding: teacher-written parsers each got a half wrong.
     """
-    if lang_mode.is_pypto(ctx.language):
+    if lang_mode.is_ascend(ctx.language):
         source = ctx.meta_dir.parent / "skills/ascend-profile/ascend_probe.py"
         dest = Path(ctx.workspace) / "notes/ascend_probe.py"
         if source.is_file() and (not dest.exists() or dest.read_bytes() != source.read_bytes()):
@@ -10686,7 +10686,7 @@ def job_env_preflight(ctx: LoopContext, policy: str = "refuse") -> str | None:
         return None
     be = ctx.backend
     branch = f"{ctx.branch_prefix}-jobenv"
-    if lang_mode.is_pypto(ctx.language):
+    if lang_mode.is_ascend(ctx.language):
         be.push_branch(branch)
         try:
             out = be.submit_gpu(branch, "preflight")

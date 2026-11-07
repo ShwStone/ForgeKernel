@@ -203,6 +203,13 @@ msprof 证据、密封参照和确认协议，并按任务的 `arch` 选择硬�
 [后端技术报告](docs/pypto-backend-technical-report-zh.md)和
 [优化案例报告](docs/pypto-optimization-case-studies-zh.md)。
 
+## Ascend 上的实验性 Triton 后端
+
+`language = "triton"` 使用独立提示词与知识库，首个实验目标为 Ascend950PR。
+后端复用 CANN-Bench 正确性检查，按完整调用设备时间窗计时，分别保存官方原分数与新口径。
+候选与密封参照的 JIT 缓存分开，只有候选编译产物会交给 agent，不依赖 PyPTO。
+任务生成与验收方法见[实现说明](docs/triton-backend.md)。
+
 ## 算子代码
 
 [`kernels/`](kernels/) 公开了论文里 ForgeKernel 生成的 kernel（24 个，CuTe DSL，H100 与 B200），

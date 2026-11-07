@@ -26,7 +26,7 @@ MAX_FILE_BYTES = 16 * 1024 * 1024
 # together): the control plane must validate the backend the job will actually use.
 DEFAULT_PROFILER_BACKEND = "msprof"
 PROFILER_BACKENDS = ("msprof", "cann_trace_view")
-TIMING_BASES = ("cann_trace_view", "cann_kernel_details")
+TIMING_BASES = ("cann_trace_view", "cann_kernel_details", "cann_logical_call")
 
 
 def resolve_backend(config: dict | None = None) -> str:

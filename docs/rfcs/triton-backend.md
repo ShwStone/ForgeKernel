@@ -1,6 +1,8 @@
 # RFC 增加 Triton 后端，先支持 Triton Ascend
 
-状态为提议。建议新增 `language = "triton"`，先在 Ascend 950PR 交付实验路径，后续按硬件分别认证 CUDA 等目标。保留现有 CuTe、CUDA C++ 和 PyPTO 后端，本 RFC 不改变它们的行为。
+状态为实验实现。`language = "triton"` 已有独立 agent 与运行路径，首个目标为 Ascend950PR。当前接口、计时口径与验收命令见[实现说明](../triton-backend.md)。其他 Ascend 型号、CUDA 和 ROCm 尚未认证，原有后端保持独立。
+
+下文保留原始调研与提案，包括当时的验证范围。研究探针的通过不替代完整后端验收，也不产生优化成绩。
 
 调研核对了官方文档、上游源码和本机实际安装的编译器及 launcher，并执行了独立 NPU 探针。判断是可以接入。主要工作在于补齐任务生成、环境检查、编译证据、预算与计时协议，现成的 Python kernel 能运行还不足以构成完整后端。
 
