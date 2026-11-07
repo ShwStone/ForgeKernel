@@ -735,6 +735,14 @@ def _evaluate(workspace: Path, config: dict) -> dict:
         import triton_timing
         case_ids = [str(c["case_id"]) for op in report.get("operators", []) for c in op.get("cases", [])]
         logical_windows = triton_timing.collect_windows(reports, case_ids, int(config.get("repeat", 5)))
+    if config.get("language") == "triton":
+        expected = selection.names or config.get("cases") or []
+        reported = [str(c.get("case_id")) for op in report.get("operators", [])
+                    for c in op.get("cases", [])]
+        if not expected or sorted(reported) != sorted(expected):
+            emit_artifact("cann/partial_report.json", raw)
+            raise RuntimeError(f"Triton case-set contract mismatch: expected {expected}, got {reported}; "
+                               "the report cannot supply a gate or reference reading")
     result = report_to_eval(report, config=config, logical_windows=logical_windows)
     artifacts = [emit_artifact("cann/official_report.json", raw),
                  emit_artifact("cann/evaluator.log",

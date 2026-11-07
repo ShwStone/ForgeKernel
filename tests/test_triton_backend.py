@@ -141,6 +141,31 @@ def test_card_validation_refuses_wrong_role_and_duration_sum(triton_task):
     config_path.write_text(json.dumps({**config, 'timing_basis': 'cann_kernel_details',
                                       'perf_metric_strategy': 'kernel_details'}))
     assert 'full logical-call' in cli._pypto_card_problem(card, {}, 'triton')
+    config_path.write_text(json.dumps({**config, 'cases': []}))
+    assert 'frozen cases list' in cli._pypto_card_problem(card, {}, 'triton')
+
+
+def test_full_job_cannot_pass_on_a_different_case_set(triton_task, monkeypatch, capsys):
+    adapter = _adapter()
+    mod = runtime()
+    monkeypatch.setitem(sys.modules, 'triton_runtime', mod)
+    monkeypatch.setattr(mod, 'prepare', lambda *a, **kw: None)
+    original_run = subprocess.run
+    def run(cmd, *a, **kwargs):
+        if '-m' in cmd and 'pip' in cmd:
+            return SimpleNamespace(returncode=0, stdout='', stderr='')
+        return original_run(cmd, *a, **kwargs)
+    monkeypatch.setattr(subprocess, 'run', run)
+    monkeypatch.setenv('CANN_BENCH_DIR', str(triton_task.dir.parents[1] / 'cann'))
+    monkeypatch.delenv('FK_CANN_CASES', raising=False)
+    def evaluate(cmd, *, log, **kwargs):
+        log.write_text('the evaluator judged a different case set\n')
+        (log.parent / 'wrong_eval_1.json').write_text(json.dumps(_report()))
+        return adapter.RunOutcome(0, False, '', 0.1)
+    monkeypatch.setattr(adapter, '_run_logged', evaluate)
+    with pytest.raises(RuntimeError, match='case-set contract mismatch'):
+        adapter.evaluate(triton_task.leaderboard.card)
+    assert 'cann/partial_report.json' in capsys.readouterr().out
 
 
 def test_cache_keys_separate_environment_source_and_role(tmp_path):

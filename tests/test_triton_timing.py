@@ -36,6 +36,15 @@ def test_gaps_are_retained_and_overlapping_tasks_are_not_double_counted(tmp_path
     assert len(result['sha256']) == 64
 
 
+def test_large_real_profiler_timestamps_do_not_quantize_microsecond_kernels(tmp_path):
+    path = csv_file(tmp_path, ['1794075192285830.001,1.007,CannBenchCacheClean',
+                               '1794075192285839.518,3.481,triton_A'])
+    result = timing().call_windows(path, repeat=1)
+    assert result['device_window_us'] == 3.481
+    assert result['task_sums_us'] == [3.481]
+    assert result['samples_us'] == [3.481]
+
+
 @pytest.mark.parametrize('rows,repeat', [
     (['0,1,CannBenchCacheClean', '2,3,kernel'], 2),  # partial capture
     (['0,1,CannBenchCacheClean'], 1),  # empty invocation

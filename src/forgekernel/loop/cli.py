@@ -2106,6 +2106,11 @@ def _pypto_card_problem(op_dir: Path, cfg: dict, language: str) -> str | None:
             expected_role = "candidate" if label == "card" else "reference"
             if config.get("evaluation_role") != expected_role:
                 return f"{label} tree {path}: expected evaluation_role={expected_role}"
+            cases = config.get("cases")
+            if (not isinstance(cases, list) or not cases
+                    or not all(isinstance(c, str) and c for c in cases)
+                    or len(cases) != len(set(cases))):
+                return f"{label} tree {path}: Triton requires a nonempty, unique frozen cases list"
             limit = config.get("autotune_max_configs", 0)
             seconds = config.get("case_timeout_s", 180)
             if type(limit) is not int or not 0 <= limit <= 8:

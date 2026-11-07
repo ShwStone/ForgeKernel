@@ -7,8 +7,8 @@ named ForgeKernel window, never relabel the historical task-duration sum.
 from __future__ import annotations
 
 import csv
+from decimal import Decimal, InvalidOperation
 import hashlib
-import math
 from pathlib import Path
 import statistics
 
@@ -24,11 +24,13 @@ def call_windows(csv_path: str | Path, repeat: int) -> dict:
     tasks = []
     for row in rows:
         try:
-            start = float(row["Start Time(us)"])
-            duration = float(row["Duration(us)"])
-            if not math.isfinite(start) or not math.isfinite(duration) or duration <= 0:
+            # Real CSV timestamps exceed 1e15 us. Binary float addition/subtraction
+            # quantizes a few-us kernel by ~0.25 us; subtract exact decimals first.
+            start = Decimal(row["Start Time(us)"].strip())
+            duration = Decimal(row["Duration(us)"].strip())
+            if not start.is_finite() or not duration.is_finite() or duration <= 0:
                 raise ValueError("nonfinite/nonpositive task")
-        except (KeyError, TypeError, ValueError) as exc:
+        except (KeyError, AttributeError, InvalidOperation, TypeError, ValueError) as exc:
             raise ValueError(f"incomplete logical-call profiler row: {row}") from exc
         tasks.append((start, start + duration, str(row.get("Type", ""))))
     tasks.sort()
@@ -42,7 +44,7 @@ def call_windows(csv_path: str | Path, repeat: int) -> dict:
     windows, sums, counts = [], [], []
     consumed = 0
     for i, (_, boundary, _) in enumerate(markers):
-        next_start = markers[i + 1][0] if i + 1 < len(markers) else math.inf
+        next_start = markers[i + 1][0] if i + 1 < len(markers) else Decimal('Infinity')
         owned = [t for t in candidate if boundary <= t[0] < next_start]
         if not owned or any(t[1] > next_start for t in owned):
             raise ValueError("empty call or task crossing a cache-clean boundary")
@@ -52,8 +54,10 @@ def call_windows(csv_path: str | Path, repeat: int) -> dict:
         counts.append(len(owned))
     if consumed != len(candidate):
         raise ValueError("unattributed candidate tasks outside the declared call windows")
-    return {"schema": 1, "device_window_us": statistics.median(windows),
-            "samples_us": windows, "task_sums_us": sums, "tasks_per_call": counts,
+    return {"schema": 1, "device_window_us": float(statistics.median(windows)),
+            "samples_us": [float(v) for v in windows], "task_sums_us": [float(v) for v in sums],
+            "timestamp_arithmetic": "decimal before conversion of differences to microsecond floats",
+            "tasks_per_call": counts,
             "repeat": repeat, "source": str(path),
             "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             "scope": "per-call min task start to max task end; all NPU tasks, internal gaps retained; "
