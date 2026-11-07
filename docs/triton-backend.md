@@ -5,7 +5,8 @@
 adapter. It does not fall back to CuTe prompts or import PyPTO/PTO Tile for
 preflight. Only Ascend950PR CANN-Bench tasks are admitted. Generic task/judge
 generation, other Ascend models, CUDA and ROCm are deliberately rejected until
-independently validated. This is not a default-backend change.
+independently validated. Only `target.timing = "device"` is supported; host/end-to-end
+gate windows are rejected. This is not a default-backend change.
 
 ## Generate a task
 

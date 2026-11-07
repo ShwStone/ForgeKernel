@@ -126,6 +126,9 @@ def test_other_triton_targets_and_non_cann_cards_are_rejected(triton_task):
         path.write_text(text.replace('ascend950pr', target))
         with pytest.raises(TaskError, match='only ascend950pr'):
             load_task(triton_task.dir)
+    path.write_text(text.replace('timing = "device"', 'timing = "e2e"'))
+    with pytest.raises(TaskError, match='requires device timing'):
+        load_task(triton_task.dir)
     path.write_text(text.replace('suite = "cann-bench"', 'suite = "sol-execbench"'))
     with pytest.raises(TaskError, match='frozen cann-bench'):
         load_task(triton_task.dir)

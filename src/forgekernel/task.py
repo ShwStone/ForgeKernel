@@ -288,6 +288,9 @@ def load_task(task_dir: str | Path, *, kb_root: Path | None = None,
                             "(sealed into its card at `forge new`); leave the table out")
     reference = _read_reference(d, cfg, problems)
     target = _read_target(cfg, problems)
+    if language == "triton" and target.timing != "device":
+        problems.append("experimental Triton requires device timing; host/end-to-end latency "
+                        "is not measured by the CANN logical-call window")
     teacher = _read_agent(cfg.get("agent", {}), "teacher", problems)
     student = _read_agent(cfg.get("agent", {}), "student", problems)
     budget = _read_budget(cfg, problems)

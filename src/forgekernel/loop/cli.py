@@ -2494,6 +2494,10 @@ def _main(argv: list[str] | None = None) -> int:
         sys.stderr.write(f"[loop] error: {language_problem}\n")
         return EXIT_LANGUAGE_MISMATCH
     gate_window = _resolve_gate_window(args.gate_window, cfg)
+    if language == "triton" and gate_window != "device" and not args.dry_run:
+        sys.stderr.write("[loop] error: Triton/CANN supports only the device gate window; "
+                         "host/end-to-end latency is not measured\n")
+        return EXIT_PYPTO_CARD_CONFIG
     kb_arch = _resolve_kb_arch(args.kb_arch, cfg, language)
     kb_root = root / lang_mode.kb_root_name(language)
     # A future Ascend variant may have no exact tree yet. Read and write the
