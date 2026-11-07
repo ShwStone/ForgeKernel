@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "collected_at_utc": "2026-11-07T19:41:45.445338+00:00",
-  "code_revision": "9166dd2368f1bf29c41e1e5dc4ed09e8dd45d863",
+  "collected_at_utc": "2026-11-07T19:54:46.741755+00:00",
+  "code_revision": "b54062145cc2a3b0d5c07ce86f056f1290777911",
   "cann_bench_commit": "059cb61d41b279ad021160517bd2a5f6b7a05e01",
   "case_columns": [
     "accuracy_passed",
@@ -26,7 +26,7 @@
   ],
   "cpu_verification": {
     "command": "python -m pytest -q",
-    "result": "2177 passed in 169.37s"
+    "result": "2177 passed in 169.27s"
   },
   "cleanup": {
     "spawn_status": "Succeeded",

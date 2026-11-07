@@ -1,6 +1,6 @@
 # Backend acceptance, 2026-11-07
 
-Implementation and fixes are recorded through `9166dd2`. The
+Implementation and fixes are recorded through `b540621`. The
 [machine-readable record](backend-acceptance-20261107.json) includes every case
 verdict, CSV hash, raw report hash, harness hash, environment fingerprint and
 compilation summary. The earlier [research evidence](evidence-20261107.json)
@@ -10,7 +10,7 @@ and `kernels.py` are unchanged.
 
 | Check | Result |
 | --- | --- |
-| CPU suite, `python -m pytest -q` | 2177 passed in 169.37 s |
+| CPU suite, `python -m pytest -q` | 2177 passed in 169.27 s |
 | Generated Exp candidate, two complete jobs | 20/20 each |
 | Separate sealed Exp diagnostic reference | 20/20; no compilation artifacts exported |
 | Generated GQA candidate with probability residual | 20/20 |
