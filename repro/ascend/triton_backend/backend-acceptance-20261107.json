@@ -1,0 +1,1261 @@
+{
+  "schema": 1,
+  "collected_at_utc": "2026-11-07T19:41:45.445338+00:00",
+  "code_revision": "9166dd2368f1bf29c41e1e5dc4ed09e8dd45d863",
+  "cann_bench_commit": "059cb61d41b279ad021160517bd2a5f6b7a05e01",
+  "case_columns": [
+    "accuracy_passed",
+    "decimal_device_window_us",
+    "raw_csv_sha256"
+  ],
+  "window_parser_sha256": "2e23357bbcef3b1840c7e28d1219530932ff6209351e0bbaa3b07fecfaba53cb",
+  "scope": "fixed diagnostic kernels through generated cards; no autonomous agent campaign, hosted score, or performance certification",
+  "timing_note": "Raw official reports/scores and prototype normalized values retained. Decimal windows are a separately labelled recomputation from unchanged checksummed CSVs; no historical score is rewritten.",
+  "inputs": "Official default seeded inputs and input rotation. No independent multi-seed full-task certification.",
+  "prior_harness_failures": [
+    {
+      "run": "exp",
+      "kind": "module shadowing",
+      "resolved_by": "execute the official CLI as a module without eval/ on its import path"
+    },
+    {
+      "run": "exp-v2",
+      "kind": "child CLI rejects custom timing strategy",
+      "resolved_by": "unchanged kernel_details collection plus separate adapter window parser"
+    }
+  ],
+  "cpu_verification": {
+    "command": "python -m pytest -q",
+    "result": "2177 passed in 169.37s"
+  },
+  "cleanup": {
+    "spawn_status": "Succeeded",
+    "check_status": "Succeeded",
+    "worker": {
+      "pid": 3510619,
+      "birth": "143602598"
+    },
+    "owned_worker_alive": false,
+    "fresh_npu_sum": 4,
+    "scope": "new-session orphan ignoring TERM; supervisor KILL/reaping and fresh allocation"
+  },
+  "cleanup_log_sha256": {
+    "cleanup-spawn.log": "219bb70bbc987c036430211870c524aeb5f9c7e98b5e0c4be5fe0fc12ce41875",
+    "cleanup-check.log": "e7f5dc8f17ebbfc5a7fa8bb5d69c684783b042d1b51eeadb98475bb4dd044eb3"
+  },
+  "limitations": [
+    "Ascend950PR only",
+    "serialized jobs in a dedicated evaluator environment",
+    "no real three-plus-three campaign confirmation or promotion",
+    "no graph/hot-cache/vendor-speedup certification",
+    "raw artifacts remain in local acceptance directories; rerun backend_smoke.py to collect fresh artifacts"
+  ],
+  "jobs": [
+    {
+      "run": "exp-v3",
+      "role": "candidate",
+      "job": 1,
+      "status": "Succeeded",
+      "wall_seconds": 570.9644228308462,
+      "accuracy_passed": true,
+      "passed_cases": 20,
+      "total_cases": 20,
+      "scope": null,
+      "certifies_operator_gate": false,
+      "timing_basis": "cann_logical_call",
+      "official_report_timing_basis": "cann_kernel_details",
+      "official_report_sha256": "6f5bf082a0562c7f9151aae7b86f7b57439bf03a420d58735e849de91db30c8e",
+      "original_logical_windows_sha256": "b405d4edbda7aece5f369a10633221f3397775c70cdddbf136cabe231ed194cf",
+      "recorded_timestamp_arithmetic": "prototype binary-float absolute timestamps",
+      "original_normalized_aggregate_ms": 0.010930081413786144,
+      "decimal_recomputed_aggregate_ms": 0.010915473469354385,
+      "max_recomputed_window_delta_us": 0.11799999999999988,
+      "cases": {
+        "level1/exp_1": [
+          true,
+          3.669,
+          "ac15e3ab4d46aee66f5b5d944af33c29a3653cf78759dbac9f04bd520718df02"
+        ],
+        "level1/exp_2": [
+          true,
+          12.911,
+          "33e11622e63e64c8590372304aa13c6fb1f815282c424cad5eeb16ea24aadad6"
+        ],
+        "level1/exp_3": [
+          true,
+          28.902,
+          "f6cef735368c5db08f9a488a1e52604ac8b9fe3ab927ebffca0ec60f448b50ca"
+        ],
+        "level1/exp_4": [
+          true,
+          159.94,
+          "7445effcb1822cf57b4cbb410303847e74f3324a6d1701a16f030b73561523bd"
+        ],
+        "level1/exp_5": [
+          true,
+          322.95,
+          "39b0429745f9ac85089920a722935562fe27a0ef5260756dbaa6b0444a52fefa"
+        ],
+        "level1/exp_6": [
+          true,
+          3.793,
+          "e45ce1d88d1ccc922284cf37c47aae44f87fa255506af7028506ea20ea33e3d2"
+        ],
+        "level1/exp_7": [
+          true,
+          3.602,
+          "bca85d2d1719052a8d227516e07ff0d5e3c906c1115e9d4159e42501dfdbafab"
+        ],
+        "level1/exp_8": [
+          true,
+          4.968,
+          "177e3609589be9b785b3447d96634273dc826609868dc1f76d2859fe4a4d4cbb"
+        ],
+        "level1/exp_9": [
+          true,
+          105.439,
+          "f01d1d1c08ce75c995d7ca21d07f48c24592bb868c0a28b71f5cb161015f6fcd"
+        ],
+        "level1/exp_10": [
+          true,
+          3.632,
+          "b6687cd38aa6add14cff7601567364a184f9fe3031e972902c46bc9410957113"
+        ],
+        "level1/exp_11": [
+          true,
+          4.585,
+          "206aa227d8c911a9f9e9ea6c955fd8aec2184bb74e7b9fde546c6e2f16608fbc"
+        ],
+        "level1/exp_12": [
+          true,
+          3.387,
+          "19ae0a3b728290d854e8996b327e2fe8f7ac0843497b64b75840317498db24a1"
+        ],
+        "level1/exp_13": [
+          true,
+          31.295,
+          "baa0bd70b88672fd5f2d684fbb388d60b595ace730a148fc420446a57edb2702"
+        ],
+        "level1/exp_14": [
+          true,
+          6.808,
+          "72b0c87cd48039fcae544783bbba82c6ec2ad202a7d0015778bfa423e435b649"
+        ],
+        "level1/exp_15": [
+          true,
+          4.53,
+          "db4343b77ab40808ab29a8468637b34c645d2ab7aef6294c0940f3fb2c5f4047"
+        ],
+        "level1/exp_16": [
+          true,
+          5.219,
+          "6505f94bee95339b9702c87bd14ce781edb894e7f88375eaa78bd4f4aa5f2dbd"
+        ],
+        "level1/exp_17": [
+          true,
+          5.348,
+          "ff2b5f9ed5170fff8fd0cc1c5e9c4d6a156cd74abe87a8bd0ea9ba2fad52aeb7"
+        ],
+        "level1/exp_18": [
+          true,
+          7.297,
+          "bc2809dc6a57e4e0722471e7dd6677fb45d471669c87dfde673a65883208c451"
+        ],
+        "level1/exp_19": [
+          true,
+          5.437,
+          "621154c5da6eb2147927ef3fa423899281bbfe5112bc43f2cdc84c30bcd6ce44"
+        ],
+        "level1/exp_20": [
+          true,
+          18.899,
+          "ed7847310eb6d38189c3bab54cb667be5efdb4f9d4c20a2f0171970ff72225ed"
+        ]
+      },
+      "failures": [],
+      "precision_example_case15": null,
+      "artifact_count": 135,
+      "artifact_manifest_sha256": "fc7de1a7ab239626067288d8b075a108edf32a63f99016823b2fda7c45e5ef2f",
+      "harness_sha256": {
+        "eval/cann_bench.py": "615dc9765e7569246cd948666e6ba7dd20ee9269f12af5fc23278653b257abee",
+        "eval/triton_runtime.py": "d15c4bf4508459126660d75431cb96d494ca18f0903559e3f981ce9ed8799399",
+        "eval/triton_timing.py": "6a88880249e8993f7a071b583730dc4f05f8e306ebfffc6b069bcae02e89c366",
+        "eval/ascend_process.py": "c9750fbf139ed8774b33db7536bfaba3eaeb38aa145d3b647a51b5c0e4ebc253",
+        "gpu_entry.sh": "a414635d45668c66044eda2b9696f22b2b28e520a8b99d8f447eba148252b994"
+      },
+      "environment": {
+        "device": "Ascend950PR_9579",
+        "target": "GPUTarget(backend='npu', arch='Ascend950PR_9579', warp_size=0)",
+        "versions": {
+          "triton": "3.6.0",
+          "triton-ascend": "3.6.0.post2",
+          "torch": "2.13.0+cpu",
+          "torch-npu": "2.13.0rc1"
+        },
+        "torch_abi": null,
+        "fingerprint": "8d59f34c3e81c8695d6d5b394c121c179495cd3d662eb703861e1f93ec34c9bc",
+        "raw_sha256": "a11db1fdb8d94bc158a2366a8d42d7896e6abbdef760dbd8cf60de0feade35a0"
+      },
+      "source_hash": "98b4c4c72710248ac40a875da71edc5e134eef9e9c2d03575dc26e37398216d0",
+      "compilation": {
+        "observations": 20,
+        "disk_hits": 14,
+        "lowering_us": 2654942,
+        "compiler_total_us": 7851079,
+        "final_dynamic_cv": [
+          "False"
+        ],
+        "kernel_hashes": [
+          "53406c37f23c277d16e85ad053e73770c6cd3b0266851f93de4ea10f74397a85",
+          "64db7cfb03f753bfe938d80b2363415df5aca6f3241ec9ebd1e8914c94c8205f",
+          "9be6436a3d8e17ebbac92cd5dfbc5ebb850acd8351e2c6a1135e46520784f3d9",
+          "b3f80f1b66324f1ecc5ec3d674e77cbdc35830305c384f35e6c7e5862fa4c515",
+          "b46b155493295115f2260b268a3f730edf27ef04e43f2769eaa48b965fe3771a",
+          "db3094b99456ac3bfe13f53f1d4ec1649a12b5247f685676d5f013feacef9f61"
+        ]
+      }
+    },
+    {
+      "run": "exp-v3",
+      "role": "candidate",
+      "job": 2,
+      "status": "Succeeded",
+      "wall_seconds": 563.4294341630302,
+      "accuracy_passed": true,
+      "passed_cases": 20,
+      "total_cases": 20,
+      "scope": null,
+      "certifies_operator_gate": false,
+      "timing_basis": "cann_logical_call",
+      "official_report_timing_basis": "cann_kernel_details",
+      "official_report_sha256": "704e301e4a62a008739657285d95ac623cdb87955fc2ae798bfe2b9a4ddffb62",
+      "original_logical_windows_sha256": "dcfa2c1e6c462741b89adece938dfa013df57893af1cb8a5ea7592870472ae78",
+      "recorded_timestamp_arithmetic": "prototype binary-float absolute timestamps",
+      "original_normalized_aggregate_ms": 0.0109050741922532,
+      "decimal_recomputed_aggregate_ms": 0.01089978455694199,
+      "max_recomputed_window_delta_us": 0.12199999999999989,
+      "cases": {
+        "level1/exp_1": [
+          true,
+          3.673,
+          "4b131c7ee96fbf83c6e66f12132c4be4b8565923c18b7cb5ecdec2785aeecb57"
+        ],
+        "level1/exp_2": [
+          true,
+          12.921,
+          "1f84fe82609ccc31e9a9a3c07967c1639ed8005cc31a469d480441dc6ba702a4"
+        ],
+        "level1/exp_3": [
+          true,
+          28.597,
+          "ead20a22f09dbc1e045a0da8afbfbcfd028b984abe724a9b1a2aeb46cb0a6864"
+        ],
+        "level1/exp_4": [
+          true,
+          158.098,
+          "4b032a41d322dd9da569136b7be2c2122138e987d2a6c631516a2983479fd41c"
+        ],
+        "level1/exp_5": [
+          true,
+          322.726,
+          "3efeb69fb50604f25ef637070f60eecf169bce92f97c9df9fa26d6a46b5628f6"
+        ],
+        "level1/exp_6": [
+          true,
+          3.706,
+          "cdf84d084d95c47f8942d3cdbd15b4e62dc41941ef45dcb61b3648d305892ff8"
+        ],
+        "level1/exp_7": [
+          true,
+          3.573,
+          "b5ee4342117d995b63f0d5bddf00b22aee8c888f09a41c81ba56c48e94c3aad0"
+        ],
+        "level1/exp_8": [
+          true,
+          5.161,
+          "5124359c1227b18f8c700630396a2532ba92f154d1b848cce9c69ddf37ac96a1"
+        ],
+        "level1/exp_9": [
+          true,
+          105.31,
+          "8e900f44e8425239c0dc0bef790c3be41b0cc1a386b4dbb3de94b32518d36ba9"
+        ],
+        "level1/exp_10": [
+          true,
+          3.658,
+          "70eb6d5d5d7a0e1140e1d4ef838e9db4588e51c342fb3b3ead40ab91b5c7a7de"
+        ],
+        "level1/exp_11": [
+          true,
+          4.598,
+          "0ee901c8c95171bf2b0777a35ae7fb6f049c3cec801ad83c686022db5957b9a9"
+        ],
+        "level1/exp_12": [
+          true,
+          3.316,
+          "60b5f5511b900fcda1ffa67c3359dd485c89b04aa7a98b875abcb39c3fed80c4"
+        ],
+        "level1/exp_13": [
+          true,
+          31.101,
+          "f63cfd178d04ad8c19a808de728e66ecec981c547a0997df1f635ee061e37737"
+        ],
+        "level1/exp_14": [
+          true,
+          6.822,
+          "674424f8794726ce7efc8edd4f0e65672f1664352fd9302956c0b9405c8906c4"
+        ],
+        "level1/exp_15": [
+          true,
+          4.546,
+          "ebf05efdaf14e9df38ec78e87b4a561954da7d91090ef0831ff8c4e4a1d5d541"
+        ],
+        "level1/exp_16": [
+          true,
+          5.177,
+          "fc27a4f0f8fcd0167906fd83d9706f702d8db0555857b833191d14f84f40369e"
+        ],
+        "level1/exp_17": [
+          true,
+          5.342,
+          "b81dcb752d5e7ef83befd60ea59ad55335370fec743b39ec4b62aac14d856e8c"
+        ],
+        "level1/exp_18": [
+          true,
+          7.42,
+          "522728fc465e63e83e8410741939d5a1231e7a05c3c0acff1e0a807df9a4fd30"
+        ],
+        "level1/exp_19": [
+          true,
+          5.396,
+          "6a0f3751c3a4cbe0eafa11a172ba1702435760161d4b71c97a39cb2d4e180b4c"
+        ],
+        "level1/exp_20": [
+          true,
+          18.872,
+          "261fe636ee22853c129f465afe90016596075ec6bed4f34e23ebe9d837666bc7"
+        ]
+      },
+      "failures": [],
+      "precision_example_case15": null,
+      "artifact_count": 135,
+      "artifact_manifest_sha256": "e5fcc1e0e2f1454c2edf1ab6f19db2d7655d1b414a8cca3c135ea65e953d1509",
+      "harness_sha256": {
+        "eval/cann_bench.py": "615dc9765e7569246cd948666e6ba7dd20ee9269f12af5fc23278653b257abee",
+        "eval/triton_runtime.py": "d15c4bf4508459126660d75431cb96d494ca18f0903559e3f981ce9ed8799399",
+        "eval/triton_timing.py": "6a88880249e8993f7a071b583730dc4f05f8e306ebfffc6b069bcae02e89c366",
+        "eval/ascend_process.py": "c9750fbf139ed8774b33db7536bfaba3eaeb38aa145d3b647a51b5c0e4ebc253",
+        "gpu_entry.sh": "a414635d45668c66044eda2b9696f22b2b28e520a8b99d8f447eba148252b994"
+      },
+      "environment": {
+        "device": "Ascend950PR_9579",
+        "target": "GPUTarget(backend='npu', arch='Ascend950PR_9579', warp_size=0)",
+        "versions": {
+          "triton": "3.6.0",
+          "triton-ascend": "3.6.0.post2",
+          "torch": "2.13.0+cpu",
+          "torch-npu": "2.13.0rc1"
+        },
+        "torch_abi": null,
+        "fingerprint": "8d59f34c3e81c8695d6d5b394c121c179495cd3d662eb703861e1f93ec34c9bc",
+        "raw_sha256": "a11db1fdb8d94bc158a2366a8d42d7896e6abbdef760dbd8cf60de0feade35a0"
+      },
+      "source_hash": "98b4c4c72710248ac40a875da71edc5e134eef9e9c2d03575dc26e37398216d0",
+      "compilation": {
+        "observations": 20,
+        "disk_hits": 20,
+        "lowering_us": 0,
+        "compiler_total_us": 4828119,
+        "final_dynamic_cv": [
+          "False"
+        ],
+        "kernel_hashes": [
+          "53406c37f23c277d16e85ad053e73770c6cd3b0266851f93de4ea10f74397a85",
+          "64db7cfb03f753bfe938d80b2363415df5aca6f3241ec9ebd1e8914c94c8205f",
+          "9be6436a3d8e17ebbac92cd5dfbc5ebb850acd8351e2c6a1135e46520784f3d9",
+          "b3f80f1b66324f1ecc5ec3d674e77cbdc35830305c384f35e6c7e5862fa4c515",
+          "b46b155493295115f2260b268a3f730edf27ef04e43f2769eaa48b965fe3771a",
+          "db3094b99456ac3bfe13f53f1d4ec1649a12b5247f685676d5f013feacef9f61"
+        ]
+      }
+    },
+    {
+      "run": "exp-v3",
+      "role": "reference",
+      "job": 1,
+      "status": "Succeeded",
+      "wall_seconds": 577.5834272610955,
+      "accuracy_passed": true,
+      "passed_cases": 20,
+      "total_cases": 20,
+      "scope": null,
+      "certifies_operator_gate": false,
+      "timing_basis": "cann_logical_call",
+      "official_report_timing_basis": "cann_kernel_details",
+      "official_report_sha256": "8c24f33de4f54b44327b3a8e09f53b6d4164fb97e40407f07e914d619dc6d1b3",
+      "original_logical_windows_sha256": "45fea3a4fb57feb388dfa13e67deb98809bc1800d801bd17ecc1fda759e7d14a",
+      "recorded_timestamp_arithmetic": "prototype binary-float absolute timestamps",
+      "original_normalized_aggregate_ms": 0.010952250684912639,
+      "decimal_recomputed_aggregate_ms": 0.010937376357323602,
+      "max_recomputed_window_delta_us": 0.12199999999999989,
+      "cases": {
+        "level1/exp_1": [
+          true,
+          3.645,
+          "be5ad269fb909656842f3783edaad283df82c59a0e71498135e5cd649173cd7a"
+        ],
+        "level1/exp_2": [
+          true,
+          12.778,
+          "7fee6491c6903ce74d0ee3b8875b42b5c9a0c74c1aa70afa056c491485033988"
+        ],
+        "level1/exp_3": [
+          true,
+          28.607,
+          "907697c9776dc61f96deb51cf7490ea06da16ae51522eaa62e606eebf3d90622"
+        ],
+        "level1/exp_4": [
+          true,
+          160.503,
+          "d253dabe15e559250a8cbff23aae88aadabdba926240345cda0550288fb065b7"
+        ],
+        "level1/exp_5": [
+          true,
+          324.327,
+          "21e3ee6bc4b0f1a7599d26fe43d72c6b4b59658759b66d56dd17c778e1f16695"
+        ],
+        "level1/exp_6": [
+          true,
+          3.742,
+          "d487a180062c78f1eb922e159f793d8e4f75161f027c46115c6cb6f7335f38a2"
+        ],
+        "level1/exp_7": [
+          true,
+          3.567,
+          "88591050592e9dd611a40b88359678796c9af9344b46f5e18cabf2335d2adb99"
+        ],
+        "level1/exp_8": [
+          true,
+          4.922,
+          "93850da6bbb90e7daafbe162a085e8a8cf8b3608e6054d5b4b28844ad6029ebd"
+        ],
+        "level1/exp_9": [
+          true,
+          106.331,
+          "33fe33c390a0d8c2cfcc5c05d6d188ee86bc0e762794ce55c100bbd93bd73dc7"
+        ],
+        "level1/exp_10": [
+          true,
+          3.657,
+          "7e8cb671737e312ed3c5fbc93ed4f07b6868d247a4e443fa82f7b826c581cef9"
+        ],
+        "level1/exp_11": [
+          true,
+          4.713,
+          "b94cf902c164885e6990396dfd65ad45705449478ae6e3181488e79abd5372ee"
+        ],
+        "level1/exp_12": [
+          true,
+          3.353,
+          "74ab75d46736211df7a8b8ceaa4a7b3ab47bcc1c64b589e90555bce529d33d26"
+        ],
+        "level1/exp_13": [
+          true,
+          32.122,
+          "491a3036ad3e1e01f67468e37f0c354b0e62a44687eed36a507363b7a8632191"
+        ],
+        "level1/exp_14": [
+          true,
+          6.644,
+          "88445cc016b0b55b7d7b4093e99682b346536352bce4e3e77b76f908da0a1b08"
+        ],
+        "level1/exp_15": [
+          true,
+          4.608,
+          "ddd40ba718faada593d732e01e3aa61370d7d87d393fdcbefc1227a1eeb07d9f"
+        ],
+        "level1/exp_16": [
+          true,
+          5.25,
+          "f243bd0ead1439d61e322a9ef0ab48efb27bf4da4289f4ebc39ed1ca3423e66a"
+        ],
+        "level1/exp_17": [
+          true,
+          5.421,
+          "f955eed4c4fc526f906d70a3ed6e681c947e5ad2772278232c95a28f7994b7b0"
+        ],
+        "level1/exp_18": [
+          true,
+          7.355,
+          "a264ddf4e06ed7465d82141fb610aa3c68bf15a9ac8134bd3f664e43f27548ed"
+        ],
+        "level1/exp_19": [
+          true,
+          5.428,
+          "72a1ae07e4cfe62dbd280d62c05ef594146b0c0fca3ee992dbf3402af1ba93b6"
+        ],
+        "level1/exp_20": [
+          true,
+          19.182,
+          "0606a2b2a8b7cc380d330f0e1a8cd179ec11b051791f0bf9e0656a3d68d87589"
+        ]
+      },
+      "failures": [],
+      "precision_example_case15": null,
+      "artifact_count": 44,
+      "artifact_manifest_sha256": "82c6812895fbac7526e522b628144400351d38222d90af32930411cfe73664ad",
+      "harness_sha256": {
+        "eval/cann_bench.py": "615dc9765e7569246cd948666e6ba7dd20ee9269f12af5fc23278653b257abee",
+        "eval/triton_runtime.py": "d15c4bf4508459126660d75431cb96d494ca18f0903559e3f981ce9ed8799399",
+        "eval/triton_timing.py": "6a88880249e8993f7a071b583730dc4f05f8e306ebfffc6b069bcae02e89c366",
+        "eval/ascend_process.py": "c9750fbf139ed8774b33db7536bfaba3eaeb38aa145d3b647a51b5c0e4ebc253",
+        "gpu_entry.sh": "4ad06740a087f355521cfad67687d6135dc573573994706b0db6c230d5bfb9fc"
+      },
+      "reference_compilation_artifacts_exported": false
+    },
+    {
+      "run": "gqa",
+      "role": "candidate",
+      "job": 1,
+      "status": "Succeeded",
+      "wall_seconds": 623.19234749116,
+      "accuracy_passed": false,
+      "passed_cases": 19,
+      "total_cases": 20,
+      "scope": null,
+      "certifies_operator_gate": false,
+      "timing_basis": "cann_logical_call",
+      "official_report_timing_basis": "cann_kernel_details",
+      "official_report_sha256": "7d9213bc917199815d694f5685dfb3476f890963a5b3343431ae76e433eb28da",
+      "original_logical_windows_sha256": "645ed7394b4e81a8f1753e0a6a05b82b34e902873bc16e6b8f6e36380d13ebda",
+      "recorded_timestamp_arithmetic": "prototype binary-float absolute timestamps",
+      "original_normalized_aggregate_ms": null,
+      "decimal_recomputed_aggregate_ms": null,
+      "max_recomputed_window_delta_us": 0.11000000000001364,
+      "cases": {
+        "level4/gqa_1": [
+          true,
+          101.91,
+          "a698ab8083bb63fe0b215620bf870d4cbab0be7389cff8b1b0590f8025f5d37d"
+        ],
+        "level4/gqa_2": [
+          true,
+          139.218,
+          "da6f6e53f35e57344c4759dad5ec63110e6dd3863e1659182b3f90e7cf26296f"
+        ],
+        "level4/gqa_3": [
+          true,
+          383.348,
+          "8a3fbc8b33d4c7fc8d2cef0605554ae0ff17573f020cb4e94da7cac82482b308"
+        ],
+        "level4/gqa_4": [
+          true,
+          747.001,
+          "e7de5b85f1df550e636c961ecb101e6c8c1742dbd7e0dbf534314c4b4bf843ab"
+        ],
+        "level4/gqa_5": [
+          true,
+          127.804,
+          "3a3613ef2aa8a583379fb22842957573640c180df754c18b3b15d3ca40c57b5d"
+        ],
+        "level4/gqa_6": [
+          true,
+          1420.346,
+          "bf028506290093a034711e256ac310ff61cace63f4dfa0180525ef25adb71a72"
+        ],
+        "level4/gqa_7": [
+          true,
+          98.035,
+          "756de8c9934738241ef4179166accc28897cf194ad01a307c93f375c600056b8"
+        ],
+        "level4/gqa_8": [
+          true,
+          6969.502,
+          "e37afab89d5597cb3e8d71f57187b442afe641d62b1678e11b230155dd1230e6"
+        ],
+        "level4/gqa_9": [
+          true,
+          2428.419,
+          "7cecea77cc2f8f5385d81d37673015a9be6bb2491ef7562249e8956f9182ece7"
+        ],
+        "level4/gqa_10": [
+          true,
+          7673.455,
+          "4651da8fdb9019b1b871386ebb84649c7599602196748aaf82c7e16296c0e4ca"
+        ],
+        "level4/gqa_11": [
+          true,
+          146.921,
+          "21131bf019cd06c261716d8334db187c5f16ea6f6fa070623b9f2f07d9b98dfc"
+        ],
+        "level4/gqa_12": [
+          true,
+          146.022,
+          "4df1fbb4e8a8ab0741d1ae056b8d7539e2daab7c593fb638ef866ba935f145e5"
+        ],
+        "level4/gqa_13": [
+          true,
+          520.985,
+          "db55a61af9876daa8b583fe9c6826f6b059022b7824bd7c4d95ce42ddc130254"
+        ],
+        "level4/gqa_14": [
+          true,
+          316.018,
+          "710a182e98cedbefffe20bef4e7415e1f1dff5176ab4f1c6fe2a25762877b7a5"
+        ],
+        "level4/gqa_15": [
+          false,
+          361.61,
+          "b677733b6ad4154a8d4f12348d859ce62644e749bd333842bb20c161862f303e"
+        ],
+        "level4/gqa_16": [
+          true,
+          811.492,
+          "b62139d7a7b13df7f318674c018791e096b64968aea280caf47a77c000c67075"
+        ],
+        "level4/gqa_17": [
+          true,
+          1934.704,
+          "073307a3544044da10fc989efa04ca07e8ccd43e020bcdadb5e75c514b5956df"
+        ],
+        "level4/gqa_18": [
+          true,
+          55.503,
+          "6852f99ea174b23ff19cd8f49e09723988726b86b378332078e3595101707528"
+        ],
+        "level4/gqa_19": [
+          true,
+          55.392,
+          "c72880c7d71d8d56c5888ecafc4c7fb0c42205fd98917d55a15579b19cd664b5"
+        ],
+        "level4/gqa_20": [
+          true,
+          101.6,
+          "8b7527a246b96866779d8c274db3cbfdc83f4c6f599238414b2468df2d19bf1d"
+        ]
+      },
+      "failures": [
+        {
+          "case_id": "level4/gqa_15",
+          "failure_type": "precision_mismatch",
+          "error": "精度不达标:   - float16[y]: ❌ MERE=0.001638, MARE=67.949295 (threshold=9.765625e-04, mare_threshold=9.765625e-03), 小值域兜底❌(NPU/CPU错误=4/0, 总=9854)",
+          "accuracy": {
+            "checker_name": "relative_error",
+            "mere": 0.0016381268271282242,
+            "mare": 67.94929504394531,
+            "max_diff": 6.103515625e-05,
+            "mean_diff": 3.1194516244189194e-06,
+            "mismatch_count": 6425,
+            "total_count": 491520,
+            "mismatch_ratio": 0.013071695963541666,
+            "small_value_error_count": 4,
+            "small_value_cpu_error_count": 0,
+            "small_value_total_count": 9854,
+            "cancel_error_count": 867,
+            "cancel_cpu_error_count": 1214,
+            "cancel_total_count": 431624,
+            "small_value_passed": false,
+            "cancel_passed": true,
+            "failure_type": "precision_mismatch",
+            "trial": 1
+          }
+        }
+      ],
+      "precision_example_case15": {
+        "checker_name": "relative_error",
+        "mere": 0.0016381268271282242,
+        "mare": 67.94929504394531,
+        "max_diff": 6.103515625e-05,
+        "mean_diff": 3.1194516244189194e-06,
+        "mismatch_count": 6425,
+        "total_count": 491520,
+        "mismatch_ratio": 0.013071695963541666,
+        "small_value_error_count": 4,
+        "small_value_cpu_error_count": 0,
+        "small_value_total_count": 9854,
+        "cancel_error_count": 867,
+        "cancel_cpu_error_count": 1214,
+        "cancel_total_count": 431624,
+        "small_value_passed": false,
+        "cancel_passed": true,
+        "failure_type": "precision_mismatch",
+        "trial": 1
+      },
+      "artifact_count": 239,
+      "artifact_manifest_sha256": "01f485f869f7e4230640fc9934963387c7c0e20d92841b05d1ea3d9ca0989cbe",
+      "harness_sha256": {
+        "eval/cann_bench.py": "efc7961f64d0debe56e7773a0327219c1a427fac8c1766cb4e2568a3fb0f3d28",
+        "eval/triton_runtime.py": "77bc8ab05fac495e3665bef0af36f52f84cc2f609cc2c4c2c373f3ced826242e",
+        "eval/triton_timing.py": "6a88880249e8993f7a071b583730dc4f05f8e306ebfffc6b069bcae02e89c366",
+        "eval/ascend_process.py": "c9750fbf139ed8774b33db7536bfaba3eaeb38aa145d3b647a51b5c0e4ebc253",
+        "gpu_entry.sh": "297cf8cc0d77a7dc81610e4535df58113e9cad8b8b34bb56004be5b44c3ab247"
+      },
+      "environment": {
+        "device": "Ascend950PR_9579",
+        "target": "GPUTarget(backend='npu', arch='Ascend950PR_9579', warp_size=0)",
+        "versions": {
+          "triton": "3.6.0",
+          "triton-ascend": "3.6.0.post2",
+          "torch": "2.13.0+cpu",
+          "torch-npu": "2.13.0rc1"
+        },
+        "torch_abi": {
+          "git": "cf30153c4c131c8164ee7798e5022d810682e2cb",
+          "cxx11": true
+        },
+        "fingerprint": "7c54020f37911f0f7fc1dc5e91c72430f8fde3a18bbcb27e20a3890a28861c51",
+        "raw_sha256": "47f17f0233d5ee7bc7dcb4706c8bde39cbc41362baff9a5457f8d05af15aa08e"
+      },
+      "source_hash": "1ecc768bffd71fa5bc0ae16aa72ee5c5b4b36dccdc65ea1978a4feac79d222e1",
+      "compilation": {
+        "observations": 20,
+        "disk_hits": 1,
+        "lowering_us": 25910116,
+        "compiler_total_us": 32001902,
+        "final_dynamic_cv": [
+          "False",
+          "True"
+        ],
+        "kernel_hashes": [
+          "0c6beb549cbce71bc4ef891fcdeef7d13b8a1e054401c245572963bf8918a723",
+          "14f48febcdc139f4d7eb07c5c919c17464c04b0cc6a01a50e9c172dd3121a9bd",
+          "17afc3b319bf7dcbaeef2b58837f7cdb6ee6014ecaa2f19b883383e400fabf46",
+          "37f908c85b14bcb7e53e44767721229b30034a32e216f91047141327eb1a0cb9",
+          "4bb3b09369825a1ae0e538cbab9bdcf0fb044846f359413b1887742d18355d07",
+          "4f5df1bafbb3971b07abf3be2e7a2ceb1b48172e7e2a6e616f6dfd5e66b949d8",
+          "50220954f3b39b833f06bf60e62de7b29905c4919a5cf1f97b2f8bba61466eef",
+          "5b7fe7ff3f1dd06524c4ada89128379b80bb8a6c362c2ceb82b88117821ee0c4",
+          "697f6744728fa6137f577ca94ebca20be6798712ec8ecb3b52f26f0d70571977",
+          "7788d9864433ffad8d8714cdfda4c9712bbea0dedb6b2f3de53ffc47a01077d2",
+          "78d77f4534904d17b34eaa29f9f6446c2ad10e48f92ce337ef529c334308611d",
+          "83973deea5e0a8a3ce4e7d27009285f526e782cc495abeb3703ac35f5bf1011d",
+          "8d1cd339339b2ce8305538480afae819e2671aa49b48aa6701bf84352cd46a8e",
+          "8f9bb2f4ef04468004b2378352ab774e19fa7714aa48d4fc3ac99a22c6e79adf",
+          "9fa581520200c611612ac8388c698205951eed3c4c5fa1830dc0c2732e8ae0ae",
+          "a3daed8a44f53b6ea4da14dfa56d4c5fe401907643fb8fc7269bd2ca70a28a49",
+          "b259ce3787a95b9e8e967878b5c64bd9314231215e210daac4de513a9c3a07e3",
+          "d07e6e22ad32bc7c5793b12155f4354345ac4aa0bccc42245d874cb1774bc8b3",
+          "edc0b30a3412f059356fbd493a265c67f745b452c350f7a3f707568e9179d41f"
+        ]
+      }
+    },
+    {
+      "run": "gqa-residual-scout",
+      "role": "candidate",
+      "job": 1,
+      "status": "Succeeded",
+      "wall_seconds": 92.69636390078813,
+      "accuracy_passed": true,
+      "passed_cases": 1,
+      "total_cases": 1,
+      "scope": {
+        "workloads": "level4/gqa_15",
+        "rep": "level4/gqa_15",
+        "of": 20,
+        "alias": "explicit",
+        "why": "subset for architecture pricing; not a gate reading"
+      },
+      "certifies_operator_gate": false,
+      "timing_basis": "cann_logical_call",
+      "official_report_timing_basis": "cann_kernel_details",
+      "official_report_sha256": "39e67cae4837b20aa3fba3972ce7ae79e343bfca170bef9044a910374f7c7a29",
+      "original_logical_windows_sha256": "ee690f6bdfea40b8f70568b7c33b9154ba37e3af27e68db3b3654e29ce4e42da",
+      "recorded_timestamp_arithmetic": "prototype binary-float absolute timestamps",
+      "original_normalized_aggregate_ms": 0.4165,
+      "decimal_recomputed_aggregate_ms": 0.4164870000000002,
+      "max_recomputed_window_delta_us": 0.012999999999976808,
+      "cases": {
+        "level4/gqa_15": [
+          true,
+          416.487,
+          "d7155fc307f27c4a6eeddb0858e0b816b9594937df0262e3c3f466d67d1cdc46"
+        ]
+      },
+      "failures": [],
+      "precision_example_case15": {
+        "checker_name": "relative_error",
+        "mere": 1.9940961174137266e-07,
+        "mare": 0.0009363267152103179,
+        "max_diff": 3.0517578125e-05,
+        "mean_diff": 2.9615572808931273e-09,
+        "mismatch_count": 7,
+        "total_count": 491520,
+        "mismatch_ratio": 1.4241536458333334e-05,
+        "small_value_error_count": 0,
+        "small_value_cpu_error_count": 0,
+        "small_value_total_count": 9854,
+        "cancel_error_count": 0,
+        "cancel_cpu_error_count": 1214,
+        "cancel_total_count": 431629,
+        "small_value_passed": true,
+        "cancel_passed": true,
+        "failure_type": null,
+        "trial": 1
+      },
+      "artifact_count": 19,
+      "artifact_manifest_sha256": "16abda7ef0fdbdc02009e104d31a9a2dbc3a401a5cf204e513a634eb9350a6b9",
+      "harness_sha256": {
+        "eval/cann_bench.py": "efc7961f64d0debe56e7773a0327219c1a427fac8c1766cb4e2568a3fb0f3d28",
+        "eval/triton_runtime.py": "77bc8ab05fac495e3665bef0af36f52f84cc2f609cc2c4c2c373f3ced826242e",
+        "eval/triton_timing.py": "6a88880249e8993f7a071b583730dc4f05f8e306ebfffc6b069bcae02e89c366",
+        "eval/ascend_process.py": "c9750fbf139ed8774b33db7536bfaba3eaeb38aa145d3b647a51b5c0e4ebc253",
+        "gpu_entry.sh": "297cf8cc0d77a7dc81610e4535df58113e9cad8b8b34bb56004be5b44c3ab247"
+      },
+      "environment": {
+        "device": "Ascend950PR_9579",
+        "target": "GPUTarget(backend='npu', arch='Ascend950PR_9579', warp_size=0)",
+        "versions": {
+          "triton": "3.6.0",
+          "triton-ascend": "3.6.0.post2",
+          "torch": "2.13.0+cpu",
+          "torch-npu": "2.13.0rc1"
+        },
+        "torch_abi": {
+          "git": "cf30153c4c131c8164ee7798e5022d810682e2cb",
+          "cxx11": true
+        },
+        "fingerprint": "7c54020f37911f0f7fc1dc5e91c72430f8fde3a18bbcb27e20a3890a28861c51",
+        "raw_sha256": "47f17f0233d5ee7bc7dcb4706c8bde39cbc41362baff9a5457f8d05af15aa08e"
+      },
+      "source_hash": "c0a3bce85544213aaf5ce62295016200822c7d473469a3333c6f7d772171f0a8",
+      "compilation": {
+        "observations": 1,
+        "disk_hits": 0,
+        "lowering_us": 1708393,
+        "compiler_total_us": 2012209,
+        "final_dynamic_cv": [
+          "True"
+        ],
+        "kernel_hashes": [
+          "d1b4171f513805e56b26728aab49139bed549781a1fd2c46867b8c2714bf648f"
+        ]
+      }
+    },
+    {
+      "run": "gqa-v2",
+      "role": "candidate",
+      "job": 1,
+      "status": "Succeeded",
+      "wall_seconds": 608.596173604019,
+      "accuracy_passed": true,
+      "passed_cases": 20,
+      "total_cases": 20,
+      "scope": null,
+      "certifies_operator_gate": false,
+      "timing_basis": "cann_logical_call",
+      "official_report_timing_basis": "cann_kernel_details",
+      "official_report_sha256": "644d235a2059877361cda82519033c944cb71ba2a89a5247a6f249e5496c1320",
+      "original_logical_windows_sha256": "40adf99c423965740040e772db1cb6d0f922bd47b325f1c626c6c013aa8fbf15",
+      "recorded_timestamp_arithmetic": "prototype binary-float absolute timestamps",
+      "original_normalized_aggregate_ms": 0.47803638729233544,
+      "decimal_recomputed_aggregate_ms": 0.4780355584211396,
+      "max_recomputed_window_delta_us": 0.1230000000000473,
+      "cases": {
+        "level4/gqa_1": [
+          true,
+          113.775,
+          "30a858b6f431a63d1555a3e59fd69f585fceeac335f0d8f4c65150a94cb64c28"
+        ],
+        "level4/gqa_2": [
+          true,
+          153.896,
+          "aaf1c4084fec98f9ffc838d458dd6da15bde9ab8d3e4667321b933383a87937d"
+        ],
+        "level4/gqa_3": [
+          true,
+          436.543,
+          "ed18316c3adf3066d1dd4ff2cf317b5759bb3dfa9fe0bf6d9ced1aa1a23273a3"
+        ],
+        "level4/gqa_4": [
+          true,
+          933.015,
+          "aa640981befac3c0b76840b0db7286e3b07ffe1955baf41f2e7ba6f435a64474"
+        ],
+        "level4/gqa_5": [
+          true,
+          152.715,
+          "364b47333a0d9bc9539ef66f2da3937653a7e186475c4b7b0de711eb4161437a"
+        ],
+        "level4/gqa_6": [
+          true,
+          1796.127,
+          "b3667f44c0a75543c262341a17899ff72d788b8abd51d56b4e940ab01addcd47"
+        ],
+        "level4/gqa_7": [
+          true,
+          123.45,
+          "2195242731e4d88d1e183a87cd255863004af15c734ab2abccb0a689597317e6"
+        ],
+        "level4/gqa_8": [
+          true,
+          8878.449,
+          "ddae9dcda8b3fe7b97bd412f8c4533598e3dd812b1652c8601f35220c2df72d4"
+        ],
+        "level4/gqa_9": [
+          true,
+          3232.333,
+          "a55be6810ba111d635fc570b9596666dee7515a67e3ccf77eb0c855f280c7a45"
+        ],
+        "level4/gqa_10": [
+          true,
+          9565.939,
+          "840344b5ae47fb5b1312299452c3584bca024566b54640d43848a3c9dd379d43"
+        ],
+        "level4/gqa_11": [
+          true,
+          198.527,
+          "a5daa5456f1b731be60bdd1bd14407dbfcdd77f115859e913c5482b62c512f2a"
+        ],
+        "level4/gqa_12": [
+          true,
+          198.969,
+          "511ad5083519082ac47b38a7659984ec919a02da799209de27a0fc19a75b7020"
+        ],
+        "level4/gqa_13": [
+          true,
+          705.014,
+          "7b4e089e94207de3ba718abdd33c4e406b073ec55ce659bc487d05d266b1f6bf"
+        ],
+        "level4/gqa_14": [
+          true,
+          413.352,
+          "340326849ea42f516bc2e0ca6c8c6ff7f3a120d1aa73b73c4f0db51a80d64d48"
+        ],
+        "level4/gqa_15": [
+          true,
+          415.277,
+          "b4c2a5dd0c95558986321e4072d2e2cd025ba3699a34a6eb8f6edd33c46cecea"
+        ],
+        "level4/gqa_16": [
+          true,
+          1047.088,
+          "201b63e4b7a1d1ac923d2543e340f5dc0bae4bc611195f134c55af6cd98c19b6"
+        ],
+        "level4/gqa_17": [
+          true,
+          2406.815,
+          "16bbc52200a64b65303331945edd4df645667c47f37e3abd7f9f6b629ba3aa4a"
+        ],
+        "level4/gqa_18": [
+          true,
+          60.281,
+          "9ce83d808b7f4e37ad5c9042ec39242877996a3acde1ad49dab83d5b7b7225cc"
+        ],
+        "level4/gqa_19": [
+          true,
+          70.72,
+          "61c70bc7c3b6e62e1dbeedc4cf387617cb0cbad4afd75e218dbed45ac5f79967"
+        ],
+        "level4/gqa_20": [
+          true,
+          114.055,
+          "ddad9d915d82595fe0de8d61c59586cbfb9d9ac9ca292ca8bcf2650b42bad256"
+        ]
+      },
+      "failures": [],
+      "precision_example_case15": {
+        "checker_name": "relative_error",
+        "mere": 1.9940961174137266e-07,
+        "mare": 0.0009363267152103179,
+        "max_diff": 3.0517578125e-05,
+        "mean_diff": 2.9615572808931273e-09,
+        "mismatch_count": 7,
+        "total_count": 491520,
+        "mismatch_ratio": 1.4241536458333334e-05,
+        "small_value_error_count": 0,
+        "small_value_cpu_error_count": 0,
+        "small_value_total_count": 9854,
+        "cancel_error_count": 0,
+        "cancel_cpu_error_count": 1214,
+        "cancel_total_count": 431629,
+        "small_value_passed": true,
+        "cancel_passed": true,
+        "failure_type": null,
+        "trial": 1
+      },
+      "artifact_count": 239,
+      "artifact_manifest_sha256": "4b23951e6836e4be28443f986831068f981d6a5b9468c727bfd6f300b9dc5bd2",
+      "harness_sha256": {
+        "eval/cann_bench.py": "efc7961f64d0debe56e7773a0327219c1a427fac8c1766cb4e2568a3fb0f3d28",
+        "eval/triton_runtime.py": "77bc8ab05fac495e3665bef0af36f52f84cc2f609cc2c4c2c373f3ced826242e",
+        "eval/triton_timing.py": "6a88880249e8993f7a071b583730dc4f05f8e306ebfffc6b069bcae02e89c366",
+        "eval/ascend_process.py": "c9750fbf139ed8774b33db7536bfaba3eaeb38aa145d3b647a51b5c0e4ebc253",
+        "gpu_entry.sh": "297cf8cc0d77a7dc81610e4535df58113e9cad8b8b34bb56004be5b44c3ab247"
+      },
+      "environment": {
+        "device": "Ascend950PR_9579",
+        "target": "GPUTarget(backend='npu', arch='Ascend950PR_9579', warp_size=0)",
+        "versions": {
+          "triton": "3.6.0",
+          "triton-ascend": "3.6.0.post2",
+          "torch": "2.13.0+cpu",
+          "torch-npu": "2.13.0rc1"
+        },
+        "torch_abi": {
+          "git": "cf30153c4c131c8164ee7798e5022d810682e2cb",
+          "cxx11": true
+        },
+        "fingerprint": "7c54020f37911f0f7fc1dc5e91c72430f8fde3a18bbcb27e20a3890a28861c51",
+        "raw_sha256": "47f17f0233d5ee7bc7dcb4706c8bde39cbc41362baff9a5457f8d05af15aa08e"
+      },
+      "source_hash": "c0a3bce85544213aaf5ce62295016200822c7d473469a3333c6f7d772171f0a8",
+      "compilation": {
+        "observations": 20,
+        "disk_hits": 2,
+        "lowering_us": 26187456,
+        "compiler_total_us": 31827951,
+        "final_dynamic_cv": [
+          "False",
+          "True"
+        ],
+        "kernel_hashes": [
+          "04e4a64f7b4843c01b186c7792645ffb9a1536b7fd8e0da081e3b8d8d39cf874",
+          "2a7508aed0408a2047314068c4ebcf16b6bd2cd3936ddd8c406cee6576f6a65f",
+          "3248ea4563ed323928b180acfd1b4f873f289c1da7d60596b590adb641e202c7",
+          "36be4eafea7c0efc7d571dc4b516fac24fc273fb53289cfe920e7b7b3a615a90",
+          "423a0067ea1fc4a8e16215f5c8b30423e3965932998f9155dff36ae9b75d2db8",
+          "47f7c8f513c81c71ddd37dc64d7840b75338813a9de87ca9541393ce508d3c1c",
+          "4aec69e363deb74e827c0ff7a4e696e458c703e2740c4408612cc02900716b50",
+          "64d193c80cb4fef498b53ceef4b2b22e382a62d228f9e5488a59da999f51a638",
+          "707b88daefe7c0e3d9c38fae54da3b82a0357c89e1ae0aaaae3f083b59bace4d",
+          "76957e3d2246270d67f1caaa974e57fd97d0ae08c8f1ca96c17f68dd5d3c1f00",
+          "7cd6a2d7580ff5b38befbe5682800398444b70a2a381822aa6ae37b5fbe9c28b",
+          "8c25127acab70429f0e09a68debfa0e5eb387615deaada1521993f8ce8b45cc3",
+          "9dd78f38285001ab29f43d1c8047c38d155bd500e892c19e1ab81643e2c160e0",
+          "b88837eb1f1fd74ba88416abe73694f70be202d5ad925bfc2e8315e7e9a5e85a",
+          "c9ba28ed17c1f3ad838bd643049e3e71b6c5d3be3930a75b4fbec4952dac8811",
+          "d1b4171f513805e56b26728aab49139bed549781a1fd2c46867b8c2714bf648f",
+          "e540b429a5ff026fee407cc83a3f0c8f26ffd17dd6bcbbf91b36b71848dfc367",
+          "f9ea770866b83adace9118b6b996e12cb90d3171b830d27609a5ccda5bb3376c",
+          "fdea6d579cfc96d7a9ce2e96df95ef326093300f4537e45d04b472743d8933fe"
+        ]
+      }
+    },
+    {
+      "run": "gqa-v2",
+      "role": "reference",
+      "job": 1,
+      "status": "Succeeded",
+      "wall_seconds": 602.4393578139134,
+      "accuracy_passed": true,
+      "passed_cases": 20,
+      "total_cases": 20,
+      "scope": null,
+      "certifies_operator_gate": false,
+      "timing_basis": "cann_logical_call",
+      "official_report_timing_basis": "cann_kernel_details",
+      "official_report_sha256": "7cce414dfc29013806af3ba558ca0b5c73bfdef0b9ecdb02425fa01559881d23",
+      "original_logical_windows_sha256": "6b5a5940145f40ae962789d6bf0b35a56edabac965873d9c49b5a34c763b30f7",
+      "recorded_timestamp_arithmetic": "prototype binary-float absolute timestamps",
+      "original_normalized_aggregate_ms": 0.061549251718559954,
+      "decimal_recomputed_aggregate_ms": 0.0615678116236324,
+      "max_recomputed_window_delta_us": 0.12300000000000466,
+      "cases": {
+        "level4/gqa_1": [
+          true,
+          14.508,
+          "36abb47cbef2aea8fc15847baddc6592e83a8f2f26b50e981d9a146d646f76ae"
+        ],
+        "level4/gqa_2": [
+          true,
+          13.183,
+          "cb4fd1af6b3c032300cd5cc205c1f7cf0d1ef1411320a14ac9dd718f1a538fa3"
+        ],
+        "level4/gqa_3": [
+          true,
+          26.489,
+          "64ea3d6874bd3a3c791bca42c014eca4a62e8dd6e81a08c78fb2eff13b860bb8"
+        ],
+        "level4/gqa_4": [
+          true,
+          45.81,
+          "d5091b4e6e8bce87d2ae2ed655aca3d7f468af859837343b69829bf79541c326"
+        ],
+        "level4/gqa_5": [
+          true,
+          20.222,
+          "22810322a7a12a88a23d4044abf5b67420c6f3716d0d0369e5f6cef6d84b1d89"
+        ],
+        "level4/gqa_6": [
+          true,
+          75.33,
+          "ddaeb23dd373d8bee90e75f2df23ec7a5b7d42e93c18a12e41d7afd33c915405"
+        ],
+        "level4/gqa_7": [
+          true,
+          13.741,
+          "cc189d86c52691ff69e3d882f790bcb7dc2af83b8b6f670fee0bb42dc399b434"
+        ],
+        "level4/gqa_8": [
+          true,
+          163.406,
+          "4989c60a9190d6bd98aecc10197a58c5bfe2fee6db136bce64b42bcac9468e58"
+        ],
+        "level4/gqa_9": [
+          true,
+          131.19,
+          "e88898711c7b0ed69d44bb8cdfba80423d04a8f21a2a0c9eaafd2549d97f1471"
+        ],
+        "level4/gqa_10": [
+          true,
+          183.867,
+          "448f3bdc04ed53a954a6c87894b69ac25ee2d3a7acd85b2569f1d84e0b950bcc"
+        ],
+        "level4/gqa_11": [
+          true,
+          94.373,
+          "5fc8e17e2adf572e6871668b3ada3d7ab1db41d9f64e0609c4ab75714ed39e8d"
+        ],
+        "level4/gqa_12": [
+          true,
+          95.524,
+          "13df661fccaa2af68fddb83a2defe4b2444cab586dba08a9ac3564341e9e0338"
+        ],
+        "level4/gqa_13": [
+          true,
+          326.097,
+          "a9904b012af3975795c0f4365ff670daf5cf2bd804b5394b5b995051bc38d1b6"
+        ],
+        "level4/gqa_14": [
+          true,
+          192.94,
+          "d9868ee8838b8eadc5795d583638ef5d03cf8751f38f4b277a35db3596e6d8aa"
+        ],
+        "level4/gqa_15": [
+          true,
+          333.632,
+          "2375f1355279645a4d80d556119bd3e0525e3b3e734c3daa8cc6e38b1f741fb5"
+        ],
+        "level4/gqa_16": [
+          true,
+          329.792,
+          "dcec9b93baf8ea724a1488e7baf1a5df79e54d616c9cb296b1c1845fe5b7432d"
+        ],
+        "level4/gqa_17": [
+          true,
+          222.325,
+          "6e3bd17964ba4a5a8dd382139cb4b4e08a84d526e0285a90a446c6600118f32b"
+        ],
+        "level4/gqa_18": [
+          true,
+          11.347,
+          "98ef2cd594fbca2d87f6f403feacaeef7218af0145ec9395a9161f9839009986"
+        ],
+        "level4/gqa_19": [
+          true,
+          13.984,
+          "267a4e40904721e2b0dd756d1972716f3c61ec8f5a2d3c4880ad48348fe73765"
+        ],
+        "level4/gqa_20": [
+          true,
+          14.528,
+          "6025de1fbaf13e86c2a2930b72649be988acab0516357c7d53c49e142af4d839"
+        ]
+      },
+      "failures": [],
+      "precision_example_case15": {
+        "checker_name": "relative_error",
+        "mere": 8.273785339621988e-05,
+        "mare": 0.0009765593750099998,
+        "max_diff": 6.103515625e-05,
+        "mean_diff": 3.1335778961268565e-06,
+        "mismatch_count": 6538,
+        "total_count": 491520,
+        "mismatch_ratio": 0.013301595052083334,
+        "small_value_error_count": 2,
+        "small_value_cpu_error_count": 0,
+        "small_value_total_count": 9854,
+        "cancel_error_count": 916,
+        "cancel_cpu_error_count": 1214,
+        "cancel_total_count": 431623,
+        "small_value_passed": true,
+        "cancel_passed": true,
+        "failure_type": null,
+        "trial": 1
+      },
+      "artifact_count": 44,
+      "artifact_manifest_sha256": "656d4f4930a12c5c2431a98356493f5aa3acc3021bd10452afea6f1ff1ebe9be",
+      "harness_sha256": {
+        "eval/cann_bench.py": "efc7961f64d0debe56e7773a0327219c1a427fac8c1766cb4e2568a3fb0f3d28",
+        "eval/triton_runtime.py": "77bc8ab05fac495e3665bef0af36f52f84cc2f609cc2c4c2c373f3ced826242e",
+        "eval/triton_timing.py": "6a88880249e8993f7a071b583730dc4f05f8e306ebfffc6b069bcae02e89c366",
+        "eval/ascend_process.py": "c9750fbf139ed8774b33db7536bfaba3eaeb38aa145d3b647a51b5c0e4ebc253",
+        "gpu_entry.sh": "210675686a0a4891123d65b2551471867c5adfeb8fb7da74db88d6c6f7d38ec2"
+      },
+      "reference_compilation_artifacts_exported": false
+    },
+    {
+      "run": "final-decimal-scout",
+      "role": "candidate",
+      "job": 1,
+      "status": "Succeeded",
+      "wall_seconds": 86.079059723299,
+      "accuracy_passed": true,
+      "passed_cases": 1,
+      "total_cases": 1,
+      "scope": {
+        "workloads": "level1/exp_1",
+        "rep": "level1/exp_1",
+        "of": 20,
+        "alias": "explicit",
+        "why": "subset for architecture pricing; not a gate reading"
+      },
+      "certifies_operator_gate": false,
+      "timing_basis": "cann_logical_call",
+      "official_report_timing_basis": "cann_kernel_details",
+      "official_report_sha256": "01a78abea7c929f567ee54b9bcb34a5b345d5b9158939210e0f1da7a0f278c69",
+      "original_logical_windows_sha256": "1a0a89e1d425542e0d23f0cbeacb5f5f406aafb77994c05b399676cfc775ece4",
+      "recorded_timestamp_arithmetic": "decimal before conversion of differences to microsecond floats",
+      "original_normalized_aggregate_ms": 0.0036390000000000003,
+      "decimal_recomputed_aggregate_ms": 0.0036390000000000003,
+      "max_recomputed_window_delta_us": 0.0,
+      "cases": {
+        "level1/exp_1": [
+          true,
+          3.639,
+          "a84608b4f4b23ba0c3665adaab5a0683d46fd707ffe173c4349f390547d1f873"
+        ]
+      },
+      "failures": [],
+      "precision_example_case15": null,
+      "artifact_count": 19,
+      "artifact_manifest_sha256": "253ff2dc43c1815f008629d52e65acd141805594874f37aa742b5c1d153ec7c1",
+      "harness_sha256": {
+        "eval/cann_bench.py": "4681413b6925927fef9787e3064be593ef05e6161f37763ae5ac38250a19bae5",
+        "eval/triton_runtime.py": "77bc8ab05fac495e3665bef0af36f52f84cc2f609cc2c4c2c373f3ced826242e",
+        "eval/triton_timing.py": "2e23357bbcef3b1840c7e28d1219530932ff6209351e0bbaa3b07fecfaba53cb",
+        "eval/ascend_process.py": "c9750fbf139ed8774b33db7536bfaba3eaeb38aa145d3b647a51b5c0e4ebc253",
+        "gpu_entry.sh": "297cf8cc0d77a7dc81610e4535df58113e9cad8b8b34bb56004be5b44c3ab247"
+      },
+      "environment": {
+        "device": "Ascend950PR_9579",
+        "target": "GPUTarget(backend='npu', arch='Ascend950PR_9579', warp_size=0)",
+        "versions": {
+          "triton": "3.6.0",
+          "triton-ascend": "3.6.0.post2",
+          "torch": "2.13.0+cpu",
+          "torch-npu": "2.13.0rc1"
+        },
+        "torch_abi": {
+          "git": "cf30153c4c131c8164ee7798e5022d810682e2cb",
+          "cxx11": true
+        },
+        "fingerprint": "7c54020f37911f0f7fc1dc5e91c72430f8fde3a18bbcb27e20a3890a28861c51",
+        "raw_sha256": "47f17f0233d5ee7bc7dcb4706c8bde39cbc41362baff9a5457f8d05af15aa08e"
+      },
+      "source_hash": "a191aad917171fdd6d35589a9dc3a39f383675c53dc75ce0bc927976dec7d6d4",
+      "compilation": {
+        "observations": 1,
+        "disk_hits": 0,
+        "lowering_us": 465021,
+        "compiler_total_us": 747946,
+        "final_dynamic_cv": [
+          "False"
+        ],
+        "kernel_hashes": [
+          "9be6436a3d8e17ebbac92cd5dfbc5ebb850acd8351e2c6a1135e46520784f3d9"
+        ]
+      }
+    }
+  ]
+}

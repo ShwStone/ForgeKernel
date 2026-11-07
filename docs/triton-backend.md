@@ -167,4 +167,6 @@ record. `--scout-cases level4/gqa_15` requests only a candidate diagnostic and
 keeps its non-gate scope; it never runs a reference confirmation. GQA uses the
 separate CANN library as its full-task reference. Neither script establishes an agent
 optimization result or satisfies three-job campaign confirmation by itself.
-See the acceptance record alongside the RFC probes for actual tested scope.
+See the [acceptance record](../repro/ascend/triton_backend/backend-acceptance.md)
+and its checksummed JSON for actual tested scope, retained failures and the
+decimal-timestamp precision correction.

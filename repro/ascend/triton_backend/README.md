@@ -1,12 +1,14 @@
 # Triton Ascend 后端可行性探针
 
-本目录为 [RFC](../../../docs/rfcs/triton-backend.md) 提供独立研究代码，没有接入 ForgeKernel 的任务、评分或 agent 路径。固定日期数据见 `evidence-20261107.json`。
+`runtime_probe.py` 和 `validate_gqa.py` 为 [RFC](../../../docs/rfcs/triton-backend.md) 提供原始独立研究代码，固定日期数据见 `evidence-20261107.json`。下面的命令与边界均针对这些研究探针。
+
+完整后端验收另用 `backend_smoke.py` 和 `cleanup_probe.py`，通过生成的任务卡运行官方 evaluator，并按正常提交流程构建、安装算子包。当前结果与复现方法见[验收记录](backend-acceptance.md)和[实现说明](../../../docs/triton-backend.md)。
 
 实测环境为 Ascend950PR、CANN 9.2.0、Triton-Ascend 3.6.0.post2、Torch 2.13.0+cpu、TorchNPU 2.13.0.rc1。CUDA、ROCm 和其他 Ascend 型号尚未验证。
 
 ## 先检查环境
 
-进入自己已经配置好的 CANN/TorchNPU 环境，使用对应的 Python。本目录不会安装或替换软件包。
+进入自己已经配置好的 CANN/TorchNPU 环境，使用对应的 Python。下列研究探针不会安装或替换软件包。
 
 ```bash
 PYTHON="${FK_ASCEND_PYTHON:-python3}"
@@ -84,4 +86,4 @@ run_probe "$P/validate_gqa.py" --device "$NPU_DEVICE" --out "$OUT/gqa-with-offic
 
 Graph 与 benchmark 只在单独的 Vector add 上验证。GQA 的两个 profiler 样本只用于核对任务数，不构成正式性能认证，也没有本轮厂商库 A/B。
 
-这些脚本只用于独立研究。正式后端仍需角色隔离的缓存与 artifact 收集、完整 case 门禁、计时协议、失败成本和进程回收。
+上述研究脚本不参与任务门禁。当前实验后端的缓存隔离、编译证据、完整 case 检查、计时与进程回收均单独验收，不能用这些早期探针的结果替代。
