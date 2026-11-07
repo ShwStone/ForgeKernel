@@ -69,6 +69,23 @@ def test_reference_worker_removes_observer_and_never_exports_ir(fake_triton, tmp
     assert not list(tmp_path.glob('observed_metadata.json'))
 
 
+def test_full_gqa_fixture_preserves_dated_probe_and_uses_probability_residual():
+    import importlib.util
+    from forgekernel.paths import repo_root
+    root = repo_root()
+    original = root / 'repro/ascend/triton_backend/kernels.py'
+    before = original.read_bytes()
+    path = root / 'repro/ascend/triton_backend/backend_smoke.py'
+    spec = importlib.util.spec_from_file_location('backend_smoke', path)
+    smoke = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(smoke)
+    source = smoke.gqa_candidate_source()
+    compile(source, 'kernel.py', 'exec')
+    assert 'tl.dot(p_hi, v) + tl.dot(p_lo, v)' in source
+    assert 'def gqa(query, key, value, scaleValue=-1.0, is_causal=False)' in source
+    assert original.read_bytes() == before
+
+
 def test_npu_cleanup_probe_refuses_an_unowned_spawn(monkeypatch):
     import importlib.util
     from forgekernel.paths import repo_root

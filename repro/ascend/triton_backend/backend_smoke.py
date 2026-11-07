@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import shlex
 import shutil
 import sys
 import time
@@ -23,6 +24,24 @@ from forgekernel.paths import repo_root
 from forgekernel.submit.config import load_config
 from forgekernel.submit.direct import DirectRunner
 from forgekernel.task import load_task
+
+
+def gqa_candidate_source() -> str:
+    # Keep the original dated RFC probe/evidence immutable. For strict full-case
+    # checking retain the rounding residual of softmax probabilities in a second
+    # low-precision dot, rather than changing tolerances or dispatching on case IDs.
+    source = (repo_root() / 'repro/ascend/triton_backend/kernels.py').read_text()
+    old = '        o = o * alpha[:, None] + tl.dot(p.to(q.dtype), v)'
+    if source.count(old) != 1:
+        raise ValueError('RFC GQA fixture changed; review its numerical adaptation')
+    source = source.replace(old, '''        p_hi = p.to(q.dtype)
+        p_lo = (p - p_hi.to(tl.float32)).to(q.dtype)
+        o = o * alpha[:, None] + tl.dot(p_hi, v) + tl.dot(p_lo, v)''')
+    return source + '''
+
+def gqa(query, key, value, scaleValue=-1.0, is_causal=False):
+    return launch_gqa(query, key, value, scale=scaleValue, causal=is_causal)[0]
+'''
 
 
 def cleanup_acceptance(card: Path, run_dir: Path, out: Path) -> dict:
@@ -67,6 +86,8 @@ def main(argv=None):
     parser.add_argument('--jobs', type=int, default=2)
     parser.add_argument('--reference-jobs', type=int, default=1)
     parser.add_argument('--timeout', type=int, default=900)
+    parser.add_argument('--scout-cases', default='',
+                        help='explicit case ids for a candidate-only diagnostic, NEVER a gate')
     parser.add_argument('--cleanup-check', action='store_true',
                         help='after evaluation, verify cleanup of a real NPU-owning escaped worker')
     args = parser.parse_args(argv)
@@ -89,11 +110,7 @@ def main(argv=None):
                     '--reference-name', 'fixed Triton diagnostic baseline (not a vendor A/B)']
         candidate = reference.read_text()
     else:
-        candidate = (root / 'repro/ascend/triton_backend/kernels.py').read_text() + '''
-
-def gqa(query, key, value, scaleValue=-1.0, is_causal=False):
-    return launch_gqa(query, key, value, scale=scaleValue, causal=is_causal)[0]
-'''
+        candidate = gqa_candidate_source()
     build_task(options)
     task = load_task(task_dir)
     machine = load_machine(args.machine_root)
@@ -112,6 +129,8 @@ def gqa(query, key, value, scaleValue=-1.0, is_causal=False):
     for role, tree, jobs in (('candidate', card, args.jobs),
                              ('reference', run.operators_dir / taskcard.ref_tree(task.name),
                               args.reference_jobs)):
+        if args.scout_cases and role == 'reference':
+            continue
         taskcard.write_submit(tree, task, machine, timeout=args.timeout)
         taskcard._commit(tree, 'test: bounded hardware acceptance job')
         cfg = load_config(tree.name, base_dir=run.dir)
@@ -125,15 +144,31 @@ def gqa(query, key, value, scaleValue=-1.0, is_causal=False):
         for i in range(jobs):
             log = args.out / f'{role}-{i + 1}.log'
             started = time.monotonic()
+            mode = 'all'
+            if args.scout_cases:
+                mode = ('cmd:env FK_CANN_CASES=' + shlex.quote(args.scout_cases)
+                        + ' python3 eval/cann_bench.py --workspace .')
             with log.open('w') as handle:
-                status = DirectRunner(cfg).run_mode('main', 'all', handle)
+                status = DirectRunner(cfg).run_mode('main', mode, handle)
             text = log.read_text()
             artifacts = archive_job_artifacts(text, args.out / f'{role}-{i + 1}-artifacts')
             ev = parse_eval(text)
+            scope = None
+            correct, device_ms = ev.correctness, ev.device_median_ms
+            if args.scout_cases:
+                # parse_eval correctly refuses this as a gate. Inspect only the
+                # diagnostic verdict, preserving its explicit non-certifying scope.
+                raw, _ = json.JSONDecoder().raw_decode(text.rsplit('=== JSON ===', 1)[1].strip())
+                scope = raw.get('workload_scope')
+                if not scope:
+                    raise RuntimeError('scout job did not carry its non-gate scope')
+                correct = raw['correctness']['pass']
+                device_ms = raw.get('performance', {}).get('device_median_ms')
             result = {'role': role, 'job': i + 1, 'status': status,
                       'wall_seconds': time.monotonic() - started,
-                      'correctness': ev.correctness, 'error': ev.error,
-                      'device_median_ms': ev.device_median_ms,
+                      'correctness': correct, 'error': ev.error,
+                      'device_median_ms': device_ms, 'workload_scope': scope,
+                      'certifies_operator_gate': False,
                       'cann_bench': ev.cann_bench, 'artifact_count': len(artifacts)}
             if role == 'reference' and any(a['name'].startswith('triton/') for a in artifacts):
                 raise RuntimeError('reference compilation evidence crossed the disclosure boundary')
@@ -141,7 +176,7 @@ def gqa(query, key, value, scaleValue=-1.0, is_causal=False):
             (args.out / 'summary.json').write_text(json.dumps(results, indent=2) + '\n')
             print(json.dumps({k: result[k] for k in ('role', 'job', 'status', 'wall_seconds',
                   'correctness', 'error', 'device_median_ms', 'artifact_count')}), flush=True)
-            if not ev.correctness or ev.device_median_ms is None:
+            if not correct or device_ms is None:
                 return 2
     if args.cleanup_check:
         print(json.dumps({'cleanup': cleanup_acceptance(card, run.dir, args.out)}), flush=True)

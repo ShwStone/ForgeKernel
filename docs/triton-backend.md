@@ -12,7 +12,12 @@ independently validated. This is not a default-backend change.
 The controller needs ForgeKernel, PyYAML and a local CANN-Bench checkout at the
 same commit as the execution host. The NPU host needs Triton-Ascend 3.6 with the
 compilation listener API, CANN, TorchNPU, the official evaluator and msprof.
-Neither generator nor preflight installs or upgrades packages.
+Neither generator nor preflight installs or upgrades packages. Evaluation builds
+and installs the submission through the official CANN package manager. Use a
+dedicated evaluator environment and serialize jobs sharing that interpreter;
+concurrent installations of the global `cann_bench` package are not supported by
+this experimental path. Separate Triton cache roles do not isolate Python package
+installation from other jobs.
 
 ```bash
 python scripts/init_triton_cann_task.py tasks/gqa-triton \
@@ -154,7 +159,12 @@ The spawn probe refuses execution outside the frozen process supervisor.
 
 Use a fresh output directory. Both scripts preserve raw logs and checksummed
 artifacts, and stop on failure. Exp uses an identical frozen diagnostic baseline
-only to exercise reference isolation; it is not a vendor A/B. GQA uses the RFC
-kernel and the separate CANN library. Neither script establishes an agent
+only to exercise reference isolation; it is not a vendor A/B. The GQA fixture
+keeps the RFC expression but preserves the softmax probability rounding residual
+in a second low-precision dot. The original dated probe and evidence remain
+unchanged. Its full-case failure and the correction are retained in the acceptance
+record. `--scout-cases level4/gqa_15` requests only a candidate diagnostic and
+keeps its non-gate scope; it never runs a reference confirmation. GQA uses the
+separate CANN library as its full-task reference. Neither script establishes an agent
 optimization result or satisfies three-job campaign confirmation by itself.
 See the acceptance record alongside the RFC probes for actual tested scope.
