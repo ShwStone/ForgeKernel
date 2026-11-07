@@ -122,7 +122,8 @@ in-place/atomic kernel can autotune. Selections and compilation costs are kept.
 
 Each official worker handles one case, with `--case-timeout` (default 180 s)
 covering compilation and evaluation. `eval_timeout_s` defaults to 7200 s for the
-whole job. Linux subreapers own evaluator/compiler/probe descendants, including
+whole job; runtime preflight is capped at 120 s. Linux subreapers own
+evaluator/compiler/probe descendants, including
 new-session and double-forked processes. TERM is followed by bounded KILL and
 reaping; a surviving process is reported as failure. A stopped job keeps cost
 and partial evidence, but gets no complete correctness/performance verdict.
@@ -143,8 +144,13 @@ python repro/ascend/triton_backend/backend_smoke.py \
   --cann-bench-dir /path/to/local/cann-bench --jobs 2 --reference-jobs 1
 python repro/ascend/triton_backend/backend_smoke.py \
   --out .artifacts/triton-gqa-smoke --operator gqa \
-  --cann-bench-dir /path/to/local/cann-bench --jobs 1 --reference-jobs 1
+  --cann-bench-dir /path/to/local/cann-bench --jobs 1 --reference-jobs 1 --cleanup-check
 ```
+
+`--cleanup-check` also starts a TERM-ignoring, new-session orphan holding a real
+NPU allocation. After the job's supervisor kills/reaps it, a separate job checks
+that process identity is gone and a fresh NPU allocation/synchronization works.
+The spawn probe refuses execution outside the frozen process supervisor.
 
 Use a fresh output directory. Both scripts preserve raw logs and checksummed
 artifacts, and stop on failure. Exp uses an identical frozen diagnostic baseline

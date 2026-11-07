@@ -67,3 +67,15 @@ def test_reference_worker_removes_observer_and_never_exports_ir(fake_triton, tmp
     assert triton.knobs.compilation.listener is None
     assert not list(tmp_path.glob('compilations-*'))
     assert not list(tmp_path.glob('observed_metadata.json'))
+
+
+def test_npu_cleanup_probe_refuses_an_unowned_spawn(monkeypatch):
+    import importlib.util
+    from forgekernel.paths import repo_root
+    path = repo_root() / 'repro/ascend/triton_backend/cleanup_probe.py'
+    spec = importlib.util.spec_from_file_location('cleanup_probe', path)
+    probe = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(probe)
+    monkeypatch.setattr(probe, 'under_supervisor', lambda: False)
+    with pytest.raises(RuntimeError, match='must run under'):
+        probe.main(['spawn'])

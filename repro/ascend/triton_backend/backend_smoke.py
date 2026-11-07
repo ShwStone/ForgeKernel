@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import shutil
 import sys
 import time
 from types import SimpleNamespace
@@ -24,6 +25,37 @@ from forgekernel.submit.direct import DirectRunner
 from forgekernel.task import load_task
 
 
+def cleanup_acceptance(card: Path, run_dir: Path, out: Path) -> dict:
+    """Prove TERM/KILL cleanup with a real NPU-owning new-session orphan."""
+    from dataclasses import replace
+    notes = card / 'notes'
+    notes.mkdir(exist_ok=True)
+    shutil.copy2(repo_root() / 'repro/ascend/triton_backend/cleanup_probe.py', notes / 'cleanup_probe.py')
+    taskcard._commit(card, 'test: bounded NPU descendant cleanup probe')
+    cfg = replace(load_config(card.name, base_dir=run_dir), timeout=90)
+    runner = DirectRunner(cfg)
+    spawn_log = out / 'cleanup-spawn.log'
+    with spawn_log.open('w') as handle:
+        spawn_status = runner.run_mode('main', 'cmd:python3 notes/cleanup_probe.py spawn', handle)
+    marker = 'NPU-CLEANUP-WORKER '
+    workers = [json.loads(line[len(marker):]) for line in spawn_log.read_text().splitlines()
+               if line.startswith(marker)]
+    if spawn_status != 'Succeeded' or len(workers) != 1:
+        raise RuntimeError(f'cleanup worker did not run; see {spawn_log}')
+    worker = workers[0]
+    check_log = out / 'cleanup-check.log'
+    with check_log.open('w') as handle:
+        check_status = runner.run_mode('main', 'cmd:python3 notes/cleanup_probe.py check '
+            f'--pid {int(worker["pid"])} --birth {int(worker["birth"])}', handle)
+    if check_status != 'Succeeded' or 'NPU-CLEANUP-OK ' not in check_log.read_text():
+        raise RuntimeError(f'NPU cleanup failed; see {check_log}')
+    result = {'spawn_status': spawn_status, 'check_status': check_status, 'worker': worker,
+              'owned_worker_alive': False, 'fresh_npu_sum': 4,
+              'scope': 'new-session orphan ignoring TERM; supervisor KILL/reaping and fresh allocation'}
+    (out / 'cleanup.json').write_text(json.dumps(result, indent=2) + '\n')
+    return result
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
@@ -35,6 +67,8 @@ def main(argv=None):
     parser.add_argument('--jobs', type=int, default=2)
     parser.add_argument('--reference-jobs', type=int, default=1)
     parser.add_argument('--timeout', type=int, default=900)
+    parser.add_argument('--cleanup-check', action='store_true',
+                        help='after evaluation, verify cleanup of a real NPU-owning escaped worker')
     args = parser.parse_args(argv)
     if args.out.exists():
         parser.error('--out must be a fresh directory')
@@ -109,6 +143,8 @@ def gqa(query, key, value, scaleValue=-1.0, is_causal=False):
                   'correctness', 'error', 'device_median_ms', 'artifact_count')}), flush=True)
             if not ev.correctness or ev.device_median_ms is None:
                 return 2
+    if args.cleanup_check:
+        print(json.dumps({'cleanup': cleanup_acceptance(card, run.dir, args.out)}), flush=True)
     return 0
 
 
