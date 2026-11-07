@@ -71,8 +71,10 @@ run_with_timeout() {
 
 case "$TASK" in
     preflight)
-        # A broken device/runtime must not spend the whole evaluation budget on health checks.
-        if [ "$TASK_TIMEOUT" -gt 120 ]; then TASK_TIMEOUT=120; fi
+        # Supervised Triton cards fail fast; preserve legacy PyPTO preflight budgets.
+        if [ -f eval/ascend_process.py ] && [ "$TASK_TIMEOUT" -gt 120 ]; then
+            TASK_TIMEOUT=120
+        fi
         run_with_timeout "$PYTHON" eval/cann_bench.py --workspace "$WORKSPACE" --preflight
         ;;
     correctness|perf|all|cardref|ref|cann)
