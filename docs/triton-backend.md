@@ -171,3 +171,11 @@ optimization result or satisfies three-job campaign confirmation by itself.
 See the [acceptance record](../repro/ascend/triton_backend/backend-acceptance.md)
 and its checksummed JSON for actual tested scope, retained failures and the
 decimal-timestamp precision correction.
+
+A separate [real DeepSeek SwiGLU campaign](../repro/ascend/triton_backend/deepseek_swiglu/README.md)
+started from a signature-only stub on 2026-11-08. One model-authored candidate
+completed strict three-candidate/three-fresh-reference confirmation at 1.187x the
+named native library, with 260/260 case verdicts across 13 complete jobs. The
+dossier retains per-case regressions, exported source, cache evidence and a
+teacher timeout/retry-classification fix. This is one single-node public-case
+campaign, not independent multi-seed or hidden-set certification.
