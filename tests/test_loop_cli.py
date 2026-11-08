@@ -681,6 +681,20 @@ def test_a_persistent_stream_cut_still_gives_up(monkeypatch):
 
 
 
+@pytest.mark.parametrize("stderr", [
+    '[claude-code:unrecognized_model] {"model":"deepseek-flash"}',
+    'request timed out',
+])
+def test_a_turn_deadline_keeps_the_short_agent_budget(monkeypatch, stderr):
+    from forgekernel.loop.driver import AgentError
+    timed_out = _FakeProc(124, stderr=stderr)
+    b = _agent_backend(monkeypatch,
+                       [timed_out, timed_out, _FakeProc(0, stdout="too many attempts")],
+                       agent_retries=2, api_outage_retries=8)
+    with pytest.raises(AgentError, match="after 2 attempts"):
+        b.run_agent("go")
+
+
 def test_an_auth_failure_keeps_the_short_agent_budget(monkeypatch):
     from forgekernel.loop.driver import AgentError
     b = _backend(monkeypatch, agent_retries=3, api_outage_retries=8)

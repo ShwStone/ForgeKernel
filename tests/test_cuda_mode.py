@@ -45,8 +45,9 @@ MARKED = STUDENT.replace(
 # ---------------------------------------------------------------- modes
 def test_a_language_belongs_to_one_mode_and_each_mode_reads_its_own_kb_and_provenance(tmp_path):
     assert lang_mode.mode_of("cuda-sol") == lang_mode.MODE_CUDA
-    for lang in ("cutedsl", "triton", "inline-ptx", None):
+    for lang in ("cutedsl", "inline-ptx", None):
         assert lang_mode.mode_of(lang) == lang_mode.MODE_CUTEDSL
+    assert lang_mode.mode_of("triton") == lang_mode.MODE_TRITON
     assert lang_mode.kb_root_name("cutedsl") == "hw_kb/cutedsl"
     assert lang_mode.kb_root_name("cuda-sol") == "hw_kb/cuda"
     assert lang_mode.kb_repo_root(tmp_path / "hw_kb" / "cuda") == tmp_path

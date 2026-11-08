@@ -588,7 +588,8 @@ def secret_files_for(repo_root: Path, op: str | None, teacher_trees) -> tuple[Pa
 def from_config(cfg: dict, *, oracle_mode: str, repo_root: Path,
                 teacher_trees: list[Path],
                 dsl_source_dirs_default: tuple[Path, ...] | list[Path] = (),
-                op: str | None = None, language: str = "cutedsl") -> AgentPolicy:
+                op: str | None = None, language: str = "cutedsl",
+                submit_env: dict | None = None) -> AgentPolicy:
     """``dsl_source_dirs_default``: what ``loop.dsl_source.resolve`` derived for an
     empty ``[loop] dsl_source_dirs`` — used only when the key is empty; a declared
     list wins as written. ``op``: the operator card, whose ``submit.local.toml`` is
@@ -597,6 +598,15 @@ def from_config(cfg: dict, *, oracle_mode: str, repo_root: Path,
     declared = lc.get(KEY_DSL_SOURCE_DIRS, [])
     if lang_mode.is_cuda(language):
         declared = lc.get(KEY_CUDA_SOURCE_DIRS) or declared
+    private_caches = []
+    if language == "triton":
+        # Distinct role directories do not themselves stop a local-delivery agent
+        # reading a sealed reference's IR. Deny all raw caches; candidate evidence
+        # remains readable through its checked job artifacts instead.
+        private_caches.append(_abs(Path.home() / ".cache/forgekernel/triton"))
+        for env in (os.environ, submit_env or {}):
+            if raw := env.get("FK_TRITON_CACHE_ROOT"):
+                private_caches.append(_abs(raw))
     return AgentPolicy(
         oracle_mode=oracle_mode,
         repo_root=_abs(repo_root),
@@ -607,7 +617,8 @@ def from_config(cfg: dict, *, oracle_mode: str, repo_root: Path,
         teacher_trees=tuple(dict.fromkeys(_abs(p) for p in teacher_trees)),
         dsl_source_dirs=(tuple(_abs(p) for p in declared) if declared
                          else tuple(dict.fromkeys(_abs(p) for p in dsl_source_dirs_default))),
-        secret_files=secret_files_for(repo_root, op, teacher_trees),
+        secret_files=tuple(dict.fromkeys(
+            (*secret_files_for(repo_root, op, teacher_trees), *private_caches))),
         language=language,
         source_teacher_denies=bool(lc.get(KEY_SOURCE_TEACHER_DENIES, False)),
     )

@@ -407,7 +407,10 @@ class RealBackend:
             # a reader cannot tell a retrying loop from a stalled one.
             print(f"[loop] agent turn ({role}) failed, attempt "
                   f"{attempt + 1}/{self.agent_retries}: {last}", flush=True)
-            if (_TRANSIENT_AGENT_ERR.search(out[-2000:] + err[-2000:])
+            # The launcher owns rc=124: the turn used its wall-clock allowance.
+            # A custom-model warning can coexist with productive tool calls; it
+            # must not convert an exhausted turn into hours of API-outage retries.
+            if (rc != 124 and _TRANSIENT_AGENT_ERR.search(out[-2000:] + err[-2000:])
                     and outage_waits < self.api_outage_retries):
                 outage_waits += 1
                 sleep_s = min(self.api_outage_sleep_cap,
@@ -2100,6 +2103,25 @@ def _pypto_card_problem(op_dir: Path, cfg: dict, language: str) -> str | None:
             config = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError) as e:
             return f"{path} is unreadable ({type(e).__name__}: {e})"
+        if language == "triton":
+            if config.get("language") != "triton" or config.get("arch") != "ascend950pr":
+                return f"{label} tree {path}: Triton requires language=triton, arch=ascend950pr"
+            expected_role = "candidate" if label == "card" else "reference"
+            if config.get("evaluation_role") != expected_role:
+                return f"{label} tree {path}: expected evaluation_role={expected_role}"
+            cases = config.get("cases")
+            if (not isinstance(cases, list) or not cases
+                    or not all(isinstance(c, str) and c for c in cases)
+                    or len(cases) != len(set(cases))):
+                return f"{label} tree {path}: Triton requires a nonempty, unique frozen cases list"
+            limit = config.get("autotune_max_configs", 0)
+            seconds = config.get("case_timeout_s", 180)
+            if type(limit) is not int or not 0 <= limit <= 8:
+                return f"{label} tree {path}: autotune_max_configs must be 0..8"
+            if type(seconds) is not int or seconds <= 0:
+                return f"{label} tree {path}: case_timeout_s must be a positive integer"
+            if configured_timing_basis(config) != "cann_logical_call":
+                return f"{label} tree {path}: Triton gates require the full logical-call window"
         if problems := timing_basis_problems(config):
             return f"{label} tree {path}: " + "; ".join(problems)
         if why := card_backend_problem(config, loop_backend):
@@ -2130,10 +2152,13 @@ def _resolve_kb_arch(flag: str | None, cfg: dict,
     reads exactly what it always did. Validated against the tree on disk by
     _kb_arch_problem, not against a list spelled here: the trees are the list.
     """
-    default = "ascend" if lang_mode.is_pypto(language) else KB_ARCH_DEFAULT
+    default = ("ascend950pr" if language == "triton" else
+               "ascend" if lang_mode.is_ascend(language) else KB_ARCH_DEFAULT)
     chosen = flag or cfg.get("loop", {}).get("kb_arch") or default
-    if lang_mode.is_pypto(language):
+    if lang_mode.is_ascend(language):
         chosen = arch_mod.canonical_arch(chosen)
+    if language == "triton" and chosen != "ascend950pr":
+        raise SystemExit("experimental Triton requires kb_arch=ascend950pr; other targets are uncertified")
     if not re.fullmatch(r"[a-z][a-z0-9_]*", chosen):
         raise SystemExit(
             f"kb_arch must be a plain directory name like sm90 / ascend950pr, got "
@@ -2472,6 +2497,10 @@ def _main(argv: list[str] | None = None) -> int:
         sys.stderr.write(f"[loop] error: {language_problem}\n")
         return EXIT_LANGUAGE_MISMATCH
     gate_window = _resolve_gate_window(args.gate_window, cfg)
+    if language == "triton" and gate_window != "device" and not args.dry_run:
+        sys.stderr.write("[loop] error: Triton/CANN supports only the device gate window; "
+                         "host/end-to-end latency is not measured\n")
+        return EXIT_PYPTO_CARD_CONFIG
     kb_arch = _resolve_kb_arch(args.kb_arch, cfg, language)
     kb_root = root / lang_mode.kb_root_name(language)
     # A future Ascend variant may have no exact tree yet. Read and write the
@@ -2489,7 +2518,7 @@ def _main(argv: list[str] | None = None) -> int:
     # runs and which window it reads. Nothing read both, so a disagreement passed
     # every check and surfaced hours later as an unanswerable gate line or a
     # rejected recon report. Fail closed at launch, where it costs one message.
-    if lang_mode.is_pypto(language) and not args.dry_run:
+    if lang_mode.is_ascend(language) and not args.dry_run:
         if why := _pypto_card_problem(op_dir, cfg, language):
             sys.stderr.write(f"[loop] error: {why}\n")
             return EXIT_PYPTO_CARD_CONFIG
@@ -2635,7 +2664,7 @@ def _main(argv: list[str] | None = None) -> int:
                 teacher_trees=_teacher_only_trees(cfg, root, args.op, oracle_mode,
                                                   declared_oracle, goal_ref=False),
                 dsl_source_dirs_default=dsl_source.dirs if dsl_source.defaulted else (),
-                language=language), student_online=True,
+                language=language, submit_env=card_env), student_online=True,
                 deny_write=tuple(goal_ref_mod.session_read_only_paths(op_dir))),
             make_backend=goal_ref_backend(args.op, cfg, args.git_name, args.git_email),
             settings=goal_settings,
@@ -2744,7 +2773,7 @@ def _main(argv: list[str] | None = None) -> int:
             cfg, root, args.op, oracle_mode,
             _student_denied_oracle(oracle_mode, args.oracle, cfg, declared_oracle)),
         dsl_source_dirs_default=dsl_source.dirs if dsl_source.defaulted else (),
-        language=language)
+        language=language, submit_env=card_env)
     backend = RealBackend(args.op, workspace, args.agent_cmd, args.git_name, args.git_email,
                           teacher_agent_cmd=args.teacher_agent_cmd, agent_policy=policy,
                           agent_heartbeat_s=args.agent_heartbeat_s)

@@ -72,14 +72,14 @@ def noise_floor(best: dict) -> float:
 
 
 def promotion_problem(task, best: dict) -> str | None:
-    if task.language != "pypto":
+    if task.language not in ("pypto", "triton"):
         return None
     if best.get("ratio_basis") != "cross-job-median-vs-median":
-        return "PyPTO promotion needs a fresh cross-job reference confirmation"
+        return "Ascend promotion needs a fresh cross-job reference confirmation"
     requested = max(3, best.get("requested", 0))
     if (len(best.get("samples_ms", [])) < requested
             or len(best.get("ref_samples_ms", [])) < requested):
-        return "PyPTO promotion needs at least three complete student and reference jobs"
+        return "Ascend promotion needs at least three complete student and reference jobs"
     if best.get("rejected_jobs") or best.get("ref_workloads_mismatch"):
         return "confirmation contains a failed job or workload mismatch"
     gain = best.get("speedup")
@@ -92,7 +92,7 @@ def promotion_problem(task, best: dict) -> str | None:
 
 def _next_pypto(task, best: dict, dest: Path, step: float) -> Path:
     if not task.leaderboard or task.leaderboard.suite != "cann-bench":
-        raise ValueError("PyPTO promotion requires a frozen CANN-Bench task")
+        raise ValueError("Ascend promotion requires a frozen CANN-Bench task")
     if problem := promotion_problem(task, best):
         raise ValueError(problem)
     ignore = shutil.ignore_patterns(".git", ".jobs", ".exec", ".cann_results", "__pycache__",
@@ -131,10 +131,13 @@ def _next_pypto(task, best: dict, dest: Path, step: float) -> Path:
     function.body = [ast.Raise(exc=ast.Call(func=ast.Name(id="NotImplementedError", ctx=ast.Load()),
                                           args=[ast.Constant("implement the milestone")], keywords=[]))]
     ast.fix_missing_locations(function)
-    (card / "kernel.py").write_text("from __future__ import annotations\nimport torch\nimport pypto\n\n"
+    imports = ("import triton\nimport triton.language as tl" if task.language == "triton"
+               else "import pypto")
+    (card / "kernel.py").write_text(f"from __future__ import annotations\nimport torch\n{imports}\n\n"
                                     + ast.unparse(function) + "\n", encoding="utf-8")
     conf = json.loads((ref / "eval/cann_task.json").read_text())
     conf["source_dir"] = "src"
+    conf["evaluation_role"] = "reference"
     (ref / "eval/cann_task.json").write_text(json.dumps(conf, indent=2) + "\n")
     cfg["leaderboard"]["ref"] = "leaderboard/ref"
     cfg.pop("reference", None)
@@ -162,7 +165,10 @@ def _next_pypto(task, best: dict, dest: Path, step: float) -> Path:
     }, indent=2) + "\n")
     from forgekernel.paths import template_dir
     for tree in (card, ref):
-        for name in ("cann_bench.py", "ascend_profiler.py"):
+        names = ["cann_bench.py", "ascend_profiler.py"]
+        if task.language == "triton":
+            names += ["triton_runtime.py", "triton_timing.py", "ascend_process.py"]
+        for name in names:
             shutil.copy2(template_dir() / "eval" / name, tree / "eval" / name)
         shutil.copy2(template_dir() / "pypto_gpu_entry.sh", tree / "gpu_entry.sh")
     load_task(dest)
@@ -175,7 +181,7 @@ def next_generation(task, best: dict, dest: Path, step: float) -> Path:
         raise FileExistsError(f"{dest} exists; remove it or start the chain elsewhere")
     if not math.isfinite(step) or step <= 1:
         raise ValueError("generation target must be finite and greater than 1")
-    if task.language == "pypto":
+    if task.language in ("pypto", "triton"):
         dest.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(prefix=".promote-", dir=dest.parent) as tmp:
             staged = Path(tmp) / dest.name

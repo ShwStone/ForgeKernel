@@ -54,7 +54,10 @@ BASIS_CUPTI = "cupti_kernel_span"
 # CANN-Bench trace_view reports AI-Core E2E time for PyPTO, with host dispatch excluded.
 BASIS_CANN_TRACE_VIEW = "cann_trace_view"
 BASIS_CANN_KERNEL_DETAILS = "cann_kernel_details"
-HOST_FREE_BASES = (BASIS_GRAPH, BASIS_CUPTI, BASIS_CANN_TRACE_VIEW, BASIS_CANN_KERNEL_DETAILS)
+# Device timestamps across one logical invocation; internal scheduling gaps remain.
+BASIS_CANN_LOGICAL_CALL = "cann_logical_call"
+HOST_FREE_BASES = (BASIS_GRAPH, BASIS_CUPTI, BASIS_CANN_TRACE_VIEW, BASIS_CANN_KERNEL_DETAILS,
+                   BASIS_CANN_LOGICAL_CALL)
 _ROLE_FILENAMES = {ROLE_LIBRARY: BASELINE_FILENAME, ROLE_ARCHITECTURE: ARCH_BASELINE_FILENAME}
 
 # Bumped when a field changes meaning. A stale archive is refused rather than
@@ -278,10 +281,13 @@ class RefBaseline:
                      BASIS_CUPTI: "CUPTI kernel span (per-launch device duration from the profiler), "
                                   "host excluded",
                      BASIS_CANN_TRACE_VIEW: "CANN trace_view AI-Core E2E, host excluded",
-                     BASIS_CANN_KERNEL_DETAILS: "CANN msprof kernel_details, kernel-only, host excluded"
+                     BASIS_CANN_KERNEL_DETAILS: "CANN msprof kernel_details, kernel-only, host excluded",
+                     BASIS_CANN_LOGICAL_CALL: "CANN logical-call device span, internal scheduling gaps retained"
                      }.get(self.device_anchor_basis, "pipelined amortized window")
             lines.append(f"- device median: **{self.device_anchor_ms} ms** [MEASURED, job "
-                         f"{self.job or '?'}] ({basis} ≈ pure device — "
+                         f"{self.job or '?'}] ({basis}"
+                         + (" — " if self.device_anchor_basis == BASIS_CANN_LOGICAL_CALL
+                            else " ≈ pure device — ")
                          + ("the target anchors on this number; " if not e2e_anchor else "")
                          + "kernel-to-kernel comparisons read this number; do not mix it with "
                          "end-to-end)")
@@ -319,7 +325,8 @@ class RefBaseline:
             lines.append("- NCU: no collection path; this operator writes no NCU-anchored gate line")
         if self.profiler or self.cann_bench:
             from forgekernel.profiling import evidence_digest, benchmark_digest
-            if self.device_window_basis in (BASIS_CANN_TRACE_VIEW, BASIS_CANN_KERNEL_DETAILS):
+            if self.device_window_basis in (BASIS_CANN_TRACE_VIEW, BASIS_CANN_KERNEL_DETAILS,
+                                             BASIS_CANN_LOGICAL_CALL):
                 lines[1] = (f"- compatibility bwd_median_ms: {self.ms} ms (alias of AI-Core "
                             "device time; host/end-to-end latency NOT measured)")
             lines.append("- Ascend profiler evidence (not NCU): "

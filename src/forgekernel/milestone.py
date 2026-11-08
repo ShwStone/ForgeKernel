@@ -571,7 +571,7 @@ _ALLOC_PIN = re.compile(r"USETMAXREG|setmaxnreg|DEALLOC\s+0x|TRY_ALLOC\s+0x|"
 _PRICED_TAG = re.compile(r"\[PRICED:\s*[^\]]*\S[^\]]*\]")
 _OPERAND_SOURCE_LINE = re.compile(r"mma_a_reg|mma_a_desc")
 _GATE_CLASSES = ("ncu-direct", "ncu-derived", "correctness", "sass-derived",
-                 "msprof-direct", "msprof-derived", "cann-trace-view", "probe")
+                 "msprof-direct", "msprof-derived", "cann-trace-view", "cann-logical-call", "probe")
 _VERIFY_CLASS = re.compile(r"\[VERIFY:\s*([A-Za-z-]+)\s*\]")
 
 

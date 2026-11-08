@@ -227,6 +227,14 @@ selects the hardware knowledge base from the task's `arch`. See the
 [backend report](docs/pypto-backend-technical-report-zh.md) and the
 [optimization case studies](docs/pypto-optimization-case-studies-zh.md).
 
+## Experimental Triton on Ascend
+
+`language = "triton"` has its own prompts and KB, target-aware preflight, isolated
+candidate/reference JIT caches and candidate-only compilation evidence. The first
+experimental target is Ascend950PR with frozen CANN-Bench tasks. It uses an explicitly
+labelled full-call device window without changing official scores or requiring PyPTO.
+See [task generation, runtime protocol and validation](docs/triton-backend.md).
+
 ## Kernels
 
 [`kernels/`](kernels/) releases the kernels ForgeKernel generated in the paper (24 kernels in CuTe

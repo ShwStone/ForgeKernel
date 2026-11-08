@@ -364,7 +364,7 @@ def drive(run, machine, *, resuming: bool = False, harvest_only: bool = False) -
         met = rc == 0 and confirmed_at_target(run, task)
         # A later confirmation supersedes an optimistic in-loop stop reading.
         # Ascend always requires final confirmation; never ship a stale/noisy win.
-        unconfirmed_legacy_stop = (stop == STOP_TARGET and task.language != "pypto"
+        unconfirmed_legacy_stop = (stop == STOP_TARGET and task.language not in ("pypto", "triton")
                                    and confirmation(run, task) is None)
         final = (runs_mod.STATUS_DONE if met or unconfirmed_legacy_stop
                  else runs_mod.STATUS_STOPPED)
@@ -392,7 +392,7 @@ def confirmed_at_target(run, task) -> bool:
     c = confirmation(run, task)
     if c is None or (c.get("correctness_monitor") or {}).get("status") == "alarm":
         return False
-    if task.language == "pypto":
+    if task.language in ("pypto", "triton"):
         required = max(3, int(c.get("requested", 0)))
         if (len(c.get("jobs", [])) < required or len(c.get("ref_samples_ms", [])) < required
                 or c.get("rejected_jobs") or c.get("ref_workloads_mismatch")):
@@ -520,8 +520,8 @@ def calibrate(task, op_dir: Path) -> dict:
 def probe_ncu(task, op_dir: Path) -> bool:
     """Can NCU read the GPU's counters on this machine? One short job, every launch (the
     machine local.env names may have changed since the last one)."""
-    if task.language == "pypto":
-        return False  # CANN-Bench trace_view replaces NCU on Ascend.
+    if task.language in ("pypto", "triton"):
+        return False  # Ascend uses the target-native CANN profiler, never NCU.
     from forgekernel.loop.cli import BackendError, RealBackend
     be = RealBackend(task.name, op_dir, None, "forge-judge", "forge-judge@localhost")
     try:
@@ -580,9 +580,9 @@ def run_loop(run, task, *, resuming: bool, harvest_only: bool) -> int:
         argv += ["--target-ms", repr(task.target.ms)]
     else:
         argv += ["--equivalence-ratio", repr(task.target.ratio)]
-    if task.language == "pypto":
+    if task.language in ("pypto", "triton"):
         # One CANN-Bench evaluation already covers every public case with warmup/repeat;
-        # do not multiply several minutes of PyPTO JIT by the generic default of three.
+        # do not multiply JIT/evaluator setup by the generic default of three.
         argv += ["--ref-repeat", "1"]
     if resuming:
         argv += ["--allow-preexisting-artifacts", "--allow-dirty-kb"]
@@ -616,7 +616,7 @@ def confirmation(run, task) -> dict | None:
     if not c.get("sha") or not c.get("median_ms"):
         return None
     speedup = c.get("median_ratio")
-    if speedup is None and task.language != "pypto":
+    if speedup is None and task.language not in ("pypto", "triton"):
         # no reference rode the jobs (a generated reference): against its archived reading
         try:
             arch = json.loads((op_dir / "arch_baseline.json").read_text())
@@ -668,7 +668,7 @@ def write_report(run, task, rc: int) -> Path:
             kf.parent.mkdir(exist_ok=True)
             kf.write_text(best["kernel"], encoding="utf-8")
             lines.append(f"- kernel: {kf.relative_to(run.dir)}")
-    if task.language == "pypto":
+    if task.language in ("pypto", "triton"):
         c = confirmation(run, task) or {}
         lines += [f"- comparison protocol: {c.get('ratio_basis', 'unconfirmed')}",
                   "- case scope: public CANN-Bench cases only; not hosted hidden-set scoring",
@@ -683,7 +683,7 @@ def write_report(run, task, rc: int) -> Path:
                       f"- overall score: {official.get('overall_score')}",
                       "- per-case anchors, scores and jitter: best_confirmation.json → jobs → cann_bench",
                       "- raw report / profiler CSVs: operators/*/.jobs/<job>/artifacts/cann/"]
-    if task.language == "pypto":
+    if task.language in ("pypto", "triton"):
         lines += ["", "## Campaign protocol", "",
                   f"- architecture: {task.arch}",
                   f"- teacher: {task.teacher.model} ({task.teacher.provider}); student: "

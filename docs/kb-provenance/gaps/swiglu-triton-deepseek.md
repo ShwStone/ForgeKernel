@@ -1,0 +1,6 @@
+# Out-of-run gap queue (recon-table rows this run did not verify: swiglu-triton-deepseek)
+
+Rows with VERIFY `none` have no machine-read acceptance; rows that say "may not be expressible" without an `[EXPR:]` ladder verdict are unverified guesses; rows with VERIFY `inferred` are structural readings whose discriminating observation gave no positive reading (the two readings are byte-identical). None of the three may be used as a conclusion. These rows are the recon's reading of the reference's structure (narrated provenance) and **do not enter hw_kb**: only a probe-certified recipe carries knowledge across runs; to verify one, start a separate probe, with the evidence under `docs/kb-provenance/`.
+
+- **Reference kernel-selection heuristic** = unknown; only the 20 `level1/swi_glu_*` shapes observed — VERIFY `none`; notes: genuine unknown; no source or further reference geometry is available to this run (no machine-read verification in this run)
+- **Per-group vector width `W` (H4)** = bracketed between 14 B and 200 B per group — VERIFY `none`; notes: needs a reference geometry sweep the probe contract forbids; not required for the student decision (no machine-read verification in this run)

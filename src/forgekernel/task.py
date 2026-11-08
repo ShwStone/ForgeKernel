@@ -12,7 +12,7 @@
 ``task.toml``::
 
     [task]
-    language = "cutedsl"            # cutedsl | cuda | pypto
+    language = "cutedsl"            # cutedsl | cuda | pypto | triton
     arch     = "sm100"              # target GPU/accelerator; also picks hw_kb/<language>/<arch>/
 
     [reference]                     # leave the whole table out: a /goal session writes one
@@ -80,9 +80,10 @@ GLOBAL_FILES = ("models.toml", "loop.toml")
 DESCRIPTION_FILE = "description.md"
 SHAPES_FILE = "shapes.json"
 
-LANGUAGES = ("cutedsl", "cuda", "pypto")
+LANGUAGES = ("cutedsl", "cuda", "pypto", "triton")
 # The loop's own language name for each task language (forgekernel.loop.lang_mode).
-LOOP_LANGUAGE = {"cutedsl": "cutedsl", "cuda": "cuda-sol", "pypto": "pypto"}
+LOOP_LANGUAGE = {"cutedsl": "cutedsl", "cuda": "cuda-sol", "pypto": "pypto",
+                 "triton": "triton"}
 TIMINGS = ("device", "e2e")
 BACKENDS = ("claude",)
 ROLES = ("teacher", "student")
@@ -256,11 +257,11 @@ def load_task(task_dir: str | Path, *, kb_root: Path | None = None,
     if isinstance(arch, str):
         arch = arch_mod.canonical_arch(arch)
     nvidia_arch = isinstance(arch, str) and re.match(r"^sm\d+[a-z]?$", arch)
-    ascend_arch = language == "pypto" and arch_mod.is_ascend_arch(arch)
+    ascend_arch = language in ("pypto", "triton") and arch_mod.is_ascend_arch(arch)
     if not (nvidia_arch or ascend_arch):
         problems.append(f"[task] arch must name an NVIDIA architecture such as \"sm90\", or "
                         f"an Ascend architecture such as {arch_mod.variants()} "
-                        f"for pypto, got {arch!r}")
+                        f"for pypto/triton, got {arch!r}")
     elif language in LANGUAGES:
         kb = _kb_dir(kb_root, language, arch)
         if not kb.is_dir():
@@ -268,6 +269,13 @@ def load_task(task_dir: str | Path, *, kb_root: Path | None = None,
                             f"{language} on it ({kb} is missing)")
 
     board = _read_leaderboard(d, cfg, problems) if "leaderboard" in cfg else None
+    if language == "triton":
+        if arch != "ascend950pr":
+            problems.append("experimental Triton supports only ascend950pr; other Ascend, "
+                            "CUDA and ROCm targets need independent certification")
+        if board is None or board.suite != "cann-bench":
+            problems.append("experimental Triton requires a frozen cann-bench leaderboard task "
+                            "(scripts/init_triton_cann_task.py); generic task generation is unavailable")
     if board is None:
         description = _read_description(d, problems)
         shapes = _read_shapes(d, problems)
@@ -280,6 +288,9 @@ def load_task(task_dir: str | Path, *, kb_root: Path | None = None,
                             "(sealed into its card at `forge new`); leave the table out")
     reference = _read_reference(d, cfg, problems)
     target = _read_target(cfg, problems)
+    if language == "triton" and target.timing != "device":
+        problems.append("experimental Triton requires device timing; host/end-to-end latency "
+                        "is not measured by the CANN logical-call window")
     teacher = _read_agent(cfg.get("agent", {}), "teacher", problems)
     student = _read_agent(cfg.get("agent", {}), "student", problems)
     budget = _read_budget(cfg, problems)

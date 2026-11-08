@@ -1,5 +1,5 @@
 #!/bin/bash
-# PyPTO / CANN-Bench GPU job entry point. The candidate and reference run in separate trees.
+# Ascend / CANN-Bench job entry (PyPTO or Triton). Candidate and reference use separate trees.
 set -euo pipefail
 
 WORKSPACE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,7 +16,7 @@ TASK="${1:-help}"
 shift || true
 TASK_TIMEOUT="${TASK_TIMEOUT:-7200}"
 
-echo "=== gpu_entry.sh (PyPTO, CANN-Bench) ==="
+echo "=== gpu_entry.sh (Ascend, CANN-Bench) ==="
 echo "  task:     $TASK"
 echo "  hostname: $(hostname)"
 echo "  python:   $PYTHON"
@@ -51,7 +51,13 @@ run_with_timeout() {
     # if it ignores that. A bare KILL discarded everything, which is how a probe
     # that spent forty minutes in JIT came back saying nothing about where the
     # time went -- the one fact needed to decide whether to narrow the job.
-    timeout --signal=TERM --kill-after=30 "$TASK_TIMEOUT" "$@"
+    local -a command=("$@")
+    if [ -f eval/cann_task.json ] && [ -f eval/ascend_process.py ]; then
+        # Triton compilation/probe workers may call setsid or double-fork. Own
+        # that whole descendant tree, including cmd/preflight jobs, not only a group.
+        command=("$PYTHON" eval/ascend_process.py -- "$@")
+    fi
+    timeout --signal=TERM --kill-after=30 "$TASK_TIMEOUT" "${command[@]}"
     local rc=$?
     set -e
     if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ] || [ "$rc" -eq 143 ]; then
@@ -65,6 +71,10 @@ run_with_timeout() {
 
 case "$TASK" in
     preflight)
+        # Supervised Triton cards fail fast; preserve legacy PyPTO preflight budgets.
+        if [ -f eval/ascend_process.py ] && [ "$TASK_TIMEOUT" -gt 120 ]; then
+            TASK_TIMEOUT=120
+        fi
         run_with_timeout "$PYTHON" eval/cann_bench.py --workspace "$WORKSPACE" --preflight
         ;;
     correctness|perf|all|cardref|ref|cann)

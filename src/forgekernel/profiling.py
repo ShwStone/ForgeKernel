@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import re
 
+from forgekernel.arch import is_ascend_arch
+
 BACKENDS = ("ncu", "msprof", "cann_trace_view", "none")
 # The default PyPTO evidence channel. Kept equal to the card adapter's
 # ascend_profiler.DEFAULT_PROFILER_BACKEND: the control plane validates the same
@@ -15,6 +17,8 @@ ASCEND_BACKENDS = (PYPTO_DEFAULT_BACKEND, "cann_trace_view")
 TIMING_BASES = {
     "cann_trace_view": "trace_view",
     "cann_kernel_details": "kernel_details",
+    # Same raw official collection, DIFFERENT adapter window; never relabel its score.
+    "cann_logical_call": "kernel_details",
 }
 DEFAULT_TIMING_BASIS = "cann_trace_view"
 
@@ -31,28 +35,35 @@ def configured_timing_basis(config: dict) -> str:
     if basis:
         return basis
     strategy = str(config.get("perf_metric_strategy") or "").strip().lower()
-    return "cann_kernel_details" if strategy == "kernel_details" else DEFAULT_TIMING_BASIS
+    return next((basis for basis, name in TIMING_BASES.items() if name == strategy),
+                DEFAULT_TIMING_BASIS)
 
 
 CHANNELS = {
     "ncu": {"ncu-direct", "ncu-derived", "sass-derived"},
-    "msprof": {"msprof-direct", "msprof-derived", "cann-trace-view"},
-    "cann_trace_view": {"cann-trace-view"},
+    "msprof": {"msprof-direct", "msprof-derived", "cann-trace-view", "cann-logical-call"},
+    "cann_trace_view": {"cann-trace-view", "cann-logical-call"},
     "none": set(),
 }
 
 
-def backend_for(language: str, configured: str = "auto", ncu_available: bool = True) -> str:
+def backend_for(language: str, configured: str = "auto", ncu_available: bool = True,
+                *, arch: str | None = None) -> str:
+    # Target wins over DSL. Triton currently has only the experimental Ascend harness;
+    # a future CUDA harness must opt in explicitly rather than inherit this default.
+    ascend = is_ascend_arch(arch) if arch else language in ("pypto", "triton")
+    if language == "triton" and arch and arch != "ascend950pr":
+        raise ValueError(f"uncertified Triton target: {arch!r} (expected ascend950pr)")
     if configured == "auto":
-        if language == "pypto":
+        if ascend:
             return PYPTO_DEFAULT_BACKEND
         return "ncu" if ncu_available else "none"
     if configured not in BACKENDS:
         raise ValueError(f"profiler_backend must be one of {BACKENDS}, got {configured!r}")
-    if language == "pypto" and configured == "ncu":
-        raise ValueError("NCU cannot profile a PyPTO/Ascend task")
-    if language != "pypto" and configured in ASCEND_BACKENDS:
-        raise ValueError("Ascend profilers require a PyPTO task")
+    if ascend and configured == "ncu":
+        raise ValueError("NCU cannot profile a PyPTO/Triton Ascend task")
+    if not ascend and configured in ASCEND_BACKENDS:
+        raise ValueError("Ascend profilers require an Ascend task")
     if configured == "ncu" and not ncu_available:
         return "none"
     return configured
@@ -105,9 +116,11 @@ def evidence_digest(profiler: dict) -> dict:
 def benchmark_digest(official: dict) -> dict:
     out = {k: official[k] for k in ("tasks_version", "commit", "environment", "scores",
                                    "overall_score", "comparison", "job", "cost",
-                                   "timing_basis", "case_scope") if k in official}
+                                   "timing_basis", "official_report_timing_basis", "window_source",
+                                   "case_scope", "triton") if k in official}
     out["cases"] = [{k: c.get(k) for k in ("case_id", "elapsed_us", "baseline_perf_us",
-                     "t_hw_us", "speedup", "perf_score", "op_times", "memory_peak_mb")}
+                     "t_hw_us", "speedup", "perf_score", "op_times", "memory_peak_mb",
+                     "selected_elapsed_us", "elapsed_us_source", "logical_call")}
                     for c in official.get("cases", [])]
     return out
 

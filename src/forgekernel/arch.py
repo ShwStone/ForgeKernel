@@ -50,7 +50,7 @@ def kb_candidates(kb_root: Path, language: str, arch: str) -> list[Path]:
     root = Path(kb_root)
     canonical = canonical_arch(arch)
     out = [root / canonical]
-    if language == "pypto" and is_ascend_arch(canonical):
+    if language in ("pypto", "triton") and is_ascend_arch(canonical):
         generic = root / "ascend"
         if generic not in out:
             out.append(generic)

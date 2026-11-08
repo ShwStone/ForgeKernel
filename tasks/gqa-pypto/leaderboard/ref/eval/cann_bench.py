@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate a PyPTO candidate with CANN-Bench and emit ForgeKernel's eval JSON.
+"""Evaluate an Ascend candidate with CANN-Bench and emit ForgeKernel's eval JSON.
 
 The official CANN-Bench report is the only correctness and timing source. PyPTO uses
 ``--perf-metric-strategy trace_view``: its ``elapsed_us`` values are AI-Core E2E timings,
@@ -74,8 +74,8 @@ def geometric_mean(values: list[float]) -> float:
 
 CASE_FIELDS = ("baseline_perf_us", "speedup", "t_hw_us", "perf_score", "op_times",
                "memory_peak_mb", "memory_baseline_mb", "perf_collection_failed",
-               "device_kernels", "official_elapsed_us", "elapsed_us_source",
-               "performance_error_msg", "accuracy", "status")
+               "device_kernels", "official_elapsed_us", "selected_elapsed_us", "elapsed_us_source",
+               "performance_error_msg", "accuracy", "status", "failure_type", "error_msg")
 SCORE_FIELDS = ("score", "compilation_score", "compile_runtime_score", "function_score",
                 "performance_score", "avg_speedup", "compile_runtime_fail_cases")
 
@@ -99,7 +99,8 @@ class RunOutcome(NamedTuple):
     seconds: float
 
 
-def report_to_eval(report: dict, *, config: dict | None = None) -> dict:
+def report_to_eval(report: dict, *, config: dict | None = None,
+                   logical_windows: dict | None = None) -> dict:
     config = config or {}
     """Convert one CANN-Bench single-pass report into ForgeKernel's eval contract."""
     backend = resolve_backend(config)
@@ -124,6 +125,9 @@ def report_to_eval(report: dict, *, config: dict | None = None) -> dict:
         "comparison": "benchmark baseline and hardware bound; NOT campaign reference",
         "timing_basis": basis,
     }
+    if basis == "cann_logical_call":
+        official.update(official_report_timing_basis="cann_kernel_details",
+                        window_source="ForgeKernel per-case raw CSV parser; official score unchanged")
     failures = []
     for case in cases:
         accuracy = case.get("accuracy") or {}
@@ -139,11 +143,13 @@ def report_to_eval(report: dict, *, config: dict | None = None) -> dict:
         try:
             names, milliseconds = [], []
             for case in cases:
-                elapsed_us, elapsed_source = _case_window(case, basis)
-                case["official_elapsed_us"] = elapsed_us
+                elapsed_us, elapsed_source = _case_window(case, basis, logical_windows)
+                field = "selected_elapsed_us" if basis == "cann_logical_call" else "official_elapsed_us"
+                case[field] = elapsed_us
                 case["elapsed_us_source"] = elapsed_source
-                official["cases"][len(names)].update({
-                    "official_elapsed_us": elapsed_us, "elapsed_us_source": elapsed_source})
+                official["cases"][len(names)].update({field: elapsed_us, "elapsed_us_source": elapsed_source})
+                if basis == "cann_logical_call":
+                    official["cases"][len(names)]["logical_call"] = logical_windows[str(case["case_id"])]
                 elapsed = float(elapsed_us)
                 if elapsed <= 0 or not math.isfinite(elapsed):
                     raise MeasurementUnavailable(
@@ -153,7 +159,9 @@ def report_to_eval(report: dict, *, config: dict | None = None) -> dict:
             aggregate = geometric_mean(milliseconds)
             workloads = [
                 {"name": name, "bwd_median_ms": ms, "device_median_ms": ms,
-                 "cann_bench": {k: case.get(k) for k in CASE_FIELDS}}
+                 "cann_bench": {**{k: case.get(k) for k in CASE_FIELDS},
+                                **({"logical_call": logical_windows[str(case["case_id"])]}
+                                   if basis == "cann_logical_call" else {})}}
                 for name, ms, case in zip(names, milliseconds, cases)
             ]
             performance = {
@@ -184,7 +192,9 @@ def report_to_eval(report: dict, *, config: dict | None = None) -> dict:
                      "status": "available" if performance else "unavailable",
                      "source": f"CANN-Bench official report ({basis})",
                      "cases": [{"case_id": c.get("case_id"),
-                                "trace_view": (c.get("op_times") or {}).get("trace_view")}
+                                "trace_view": (c.get("op_times") or {}).get("trace_view"),
+                                **({"logical_call": (logical_windows or {}).get(str(c.get("case_id")))}
+                                   if basis == "cann_logical_call" else {})}
                                for c in cases]},
         **({"measurement": measurement} if accuracy_ok else {}),
     }
@@ -385,7 +395,7 @@ def evaluator_budget() -> int | None:
     return max(60, budget - min(120, max(30, budget // 20)))
 
 
-def _case_window(case: dict, basis: str) -> tuple[object, str]:
+def _case_window(case: dict, basis: str, logical_windows: dict | None = None) -> tuple[object, str]:
     """One case's declared timing window, or a measurement diagnostic."""
     if basis == BASIS:
         trace = (case.get("op_times") or {}).get("trace_view") or {}
@@ -395,6 +405,14 @@ def _case_window(case: dict, basis: str) -> tuple[object, str]:
                 f"carries no op_times.trace_view.aicore_e2e — the evaluator was most "
                 f"likely run with a perf_metric_strategy other than 'trace_view'")
         return trace["aicore_e2e"], "op_times.trace_view.aicore_e2e"
+    if basis == "cann_logical_call":
+        window = (logical_windows or {}).get(str(case.get("case_id"))) or {}
+        if window.get("schema") != 1 or window.get("device_window_us") is None:
+            raise MeasurementUnavailable(
+                f"{case.get('case_id', '?')}: no verified logical-call window "
+                f"({window.get('reason', 'raw CSV evidence absent')}); "
+                "task-duration sums or PyPTO trace events cannot replace it")
+        return window["device_window_us"], "logical_call.device_window_us"
     if case.get("elapsed_us") is None:
         raise MeasurementUnavailable(
             f"{case.get('case_id', '?')}: timing_basis is {basis!r} but the report "
@@ -640,6 +658,20 @@ def _evaluate(workspace: Path, config: dict) -> dict:
     env["PYTHONPATH"] = str(cann_dir / "src") + (
         os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
     env["PYTHONUNBUFFERED"] = "1"
+    if config.get("language") == "triton":
+        import triton_runtime
+        triton_runtime.prepare(workspace, source, reports, config, python, env)
+        # One isolated case per worker bounds JIT/autotune wall and keeps raw CSV
+        # ownership unambiguous. Do not patch the official evaluator or strategies.
+        case_timeout = config.get("case_timeout_s", 180)
+        if type(case_timeout) is not int or case_timeout <= 0:
+            raise ValueError("Triton case_timeout_s must be a positive integer")
+        cmd[cmd.index("--timeout-per-operator") + 1] = str(case_timeout)
+        cmd += ["--no-perf-batch-cases", "--max-cases-per-task-unit", "1",
+                "--op-timeout-sec", str(case_timeout)]
+        # A subreaper, rather than just a process group, owns compiler/worker
+        # descendants even if they start new sessions or their parents exit.
+        cmd = [python, str(workspace / "eval/ascend_process.py"), "--", *cmd]
     # kernel_eval.cli imports cann_bench before it rebuilds the submission. A previous
     # candidate with an import-time error must not poison every later REVERT/RETRY round.
     removed = subprocess.run([python, "-m", "pip", "uninstall", "-y", "cann_bench"],
@@ -675,7 +707,8 @@ def _evaluate(workspace: Path, config: dict) -> dict:
                     "needs a compile hook certified on hardware"}
     if outcome.interrupted:
         cost["interrupt_reason"] = outcome.reason
-        return _interrupted_eval(reports, outcome, cost, selection, config, backend)
+        return _triton_result(_interrupted_eval(reports, outcome, cost, selection, config, backend),
+                              reports, config)
     report_path = _latest_report(reports)
     if report_path is None:
         tail = (reports / "evaluator.log").read_text(encoding="utf-8", errors="replace")[-4000:]
@@ -688,7 +721,7 @@ def _evaluate(workspace: Path, config: dict) -> dict:
                                "status": "unavailable"}}
         if selection.scope:
             result["workload_scope"] = selection.scope
-        return result
+        return _triton_result(result, reports, config)
     raw = report_path.read_bytes()
     report = json.loads(raw)
     if selection.scope and (problems := scope_violations(report, selection.names)):
@@ -697,10 +730,30 @@ def _evaluate(workspace: Path, config: dict) -> dict:
         # price anything against a scope that did not happen.
         raise RuntimeError("narrowed job evaluated the wrong case set: "
                            + "; ".join(problems))
-    result = report_to_eval(report, config=config)
+    logical_windows = None
+    if config["timing_basis"] == "cann_logical_call":
+        import triton_timing
+        case_ids = [str(c["case_id"]) for op in report.get("operators", []) for c in op.get("cases", [])]
+        logical_windows = triton_timing.collect_windows(reports, case_ids, int(config.get("repeat", 5)))
+    if config.get("language") == "triton":
+        expected = selection.names or config.get("cases") or []
+        reported = [str(c.get("case_id")) for op in report.get("operators", [])
+                    for c in op.get("cases", [])]
+        if not expected or sorted(reported) != sorted(expected):
+            emit_artifact("cann/partial_report.json", raw)
+            raise RuntimeError(f"Triton case-set contract mismatch: expected {expected}, got {reported}; "
+                               "the report cannot supply a gate or reference reading")
+    result = report_to_eval(report, config=config, logical_windows=logical_windows)
     artifacts = [emit_artifact("cann/official_report.json", raw),
                  emit_artifact("cann/evaluator.log",
                                (reports / "evaluator.log").read_bytes()[-1048576:])]
+    if logical_windows is not None:
+        artifacts.append(emit_artifact("cann/logical_windows.json",
+                                       json.dumps(logical_windows, indent=2).encode()))
+        if backend != "msprof":
+            for path in sorted(reports.rglob("kernel_details.csv")):
+                artifacts.append(emit_artifact("cann/" + path.relative_to(reports).as_posix(),
+                                               path.read_bytes()))
     if outcome.rc:
         evaluator_failure(result, outcome.rc)
     if backend == "msprof":
@@ -717,11 +770,25 @@ def _evaluate(workspace: Path, config: dict) -> dict:
         # refuses any eval JSON carrying workload_scope, so this is the existing
         # guard rather than a second rule that could drift from it.
         result["workload_scope"] = selection.scope
-    result["cann_bench"].update({"report": str(report_path), "evaluator_rc": outcome.rc,
+    result.setdefault("cann_bench", {}).update({"report": str(report_path), "evaluator_rc": outcome.rc,
                                   "commit": actual_ref, "artifacts": artifacts,
                                   "cost": cost, "case_scope": selection.scope})
     (reports / "forge_eval.json").write_text(json.dumps(result, indent=2) + "\n",
                                               encoding="utf-8")
+    return _triton_result(result, reports, config)
+
+
+def _triton_result(result: dict, reports: Path, config: dict) -> dict:
+    if config.get("language") != "triton" or config.get("evaluation_role") != "candidate":
+        return result
+    import triton_runtime
+    evidence, artifacts = triton_runtime.collect(reports / "triton", emit_artifact)
+    official = result.setdefault("cann_bench", {})
+    official["triton"] = evidence
+    official.setdefault("artifacts", []).extend(artifacts)
+    official.setdefault("cost", {})["compilation"] = {
+        k: evidence[k] for k in ("compilations", "disk_hits", "compiler_total_us", "lowering_us", "scope")}
+    (reports / "forge_eval.json").write_text(json.dumps(result, indent=2) + "\n")
     return result
 
 
@@ -775,13 +842,23 @@ def main(argv: list[str] | None = None) -> int:
             basis = resolve_timing_basis(config)
             if backend == "msprof" and not shutil.which("msprof"):
                 raise RuntimeError("msprof executable unavailable")
-            import pypto
+            language = config.get("language", "pypto")
+            if language == "triton":
+                import triton_runtime
+                # No PyPTO or PTO Tile library is needed by the Triton backend.
+                snapshot = triton_runtime.environment(config.get("arch", ""))
+                dsl_version = snapshot["versions"].get("triton-ascend")
+            elif language == "pypto":
+                import pypto
+                dsl_version = pypto.__version__
+            else:
+                raise RuntimeError(f"unsupported Ascend language: {language}")
             import torch
             import torch_npu
             value = torch.ones(4, device="npu").sum().item()
             if value != 4:
                 raise RuntimeError("NPU smoke failed")
-            print(f"ASCEND-PREFLIGHT-OK pypto={pypto.__version__} "
+            print(f"ASCEND-PREFLIGHT-OK {language}={dsl_version} "
                   f"torch_npu={torch_npu.__version__} "
                   f"backend={backend} timing_basis={basis}")
             return 0
