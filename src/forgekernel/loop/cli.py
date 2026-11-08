@@ -407,7 +407,10 @@ class RealBackend:
             # a reader cannot tell a retrying loop from a stalled one.
             print(f"[loop] agent turn ({role}) failed, attempt "
                   f"{attempt + 1}/{self.agent_retries}: {last}", flush=True)
-            if (_TRANSIENT_AGENT_ERR.search(out[-2000:] + err[-2000:])
+            # The launcher owns rc=124: the turn used its wall-clock allowance.
+            # A custom-model warning can coexist with productive tool calls; it
+            # must not convert an exhausted turn into hours of API-outage retries.
+            if (rc != 124 and _TRANSIENT_AGENT_ERR.search(out[-2000:] + err[-2000:])
                     and outage_waits < self.api_outage_retries):
                 outage_waits += 1
                 sleep_s = min(self.api_outage_sleep_cap,
